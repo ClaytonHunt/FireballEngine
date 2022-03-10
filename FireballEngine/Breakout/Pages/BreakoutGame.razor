@@ -1,0 +1,18 @@
+﻿@using FireballEngine.Core.Graphics
+@code {
+    [CascadingParameter]
+    public IGraphicsDevice GraphicsDevice { get; set; } = default!;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if(firstRender)
+        {
+            Console.WriteLine("Rendering Game Component");
+
+            await GraphicsDevice.Initialize();
+            await GraphicsDevice.Clear(1.0f, 0.0f, 0.0f, 1.0f);
+        }
+
+        await base.OnAfterRenderAsync(firstRender);
+    }
+}

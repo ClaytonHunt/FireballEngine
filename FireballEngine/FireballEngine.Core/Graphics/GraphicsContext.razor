@@ -1,0 +1,36 @@
+﻿@inject IGraphicsDevice GraphicsDevice
+
+<canvas id="@Id"></canvas>
+
+<CascadingValue Value="@GraphicsDevice">
+    @*<CascadingValue Value="@Content">*@
+        @ChildContent
+    @*</CascadingValue>*@
+</CascadingValue>
+
+@code {
+    [Parameter]
+    public int Height { get; set; } = 240;
+
+    [Parameter]
+    public int Width { get; set; } = 320;
+
+    [Parameter]
+    public bool IsFullScreen { get; set; } = false;
+
+    [Parameter]
+    public RenderFragment ChildContent { get; set; } = (a) => { };
+
+    protected Guid Id = Guid.NewGuid();
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+        GraphicsDevice.Configure(Id, Width, Height);
+
+        //Content.GraphicsDevice = GraphicsDevice;
+        //TitleContainer.Http = Http;
+        //MediaPlayer.JsRuntime = JsRuntime;
+    }
+}
