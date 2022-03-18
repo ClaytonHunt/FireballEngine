@@ -1,0 +1,22 @@
+﻿@using Microsoft.AspNetCore.Components.Rendering
+
+
+@code {
+    public string Source { get; private set; }
+
+    [Parameter]
+    public RenderFragment ChildContent { get; set; } = default!;  
+
+    protected override Task OnInitializedAsync()
+    {
+        RenderTreeBuilder builder = new RenderTreeBuilder();
+
+        ChildContent?.Invoke(builder);
+
+        var frame = builder.GetFrames().Array.First();
+
+        Source = frame.TextContent;
+
+        return base.OnInitializedAsync();
+    }
+}

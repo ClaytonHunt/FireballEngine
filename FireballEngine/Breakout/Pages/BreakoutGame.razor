@@ -1,18 +1,63 @@
 ﻿@using FireballEngine.Core.Graphics
+
+<WebGLShader @ref=VertexShader2D>
+    // an attribute will receive data from a buffer
+    attribute vec4 a_position;
+
+    // all shaders have a main function
+    void main() {
+
+      // gl_Position is a special variable a vertex shader
+      // is responsible for setting
+      gl_Position = a_position;
+    }
+</WebGLShader>
+
+<WebGLShader @ref=FragmentShader2D>
+    // fragment shaders don't have a default precision so we need
+    // to pick one. mediump is a good default. It means ""medium precision""
+    precision mediump float;
+
+    void main() {
+      // gl_FragColor is a special variable a fragment shader
+      // is responsible for setting
+      gl_FragColor = vec4(1, 0, 0.5, 1); // return reddish-purple
+    }
+</WebGLShader>
+
 @code {
     [CascadingParameter]
     public IGraphicsDevice GraphicsDevice { get; set; } = default!;
 
+    private WebGLShader VertexShader2D { get; set; } = new WebGLShader();
+    private WebGLShader FragmentShader2D { get; set; } = new WebGLShader();
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if(firstRender)
+        if (firstRender)
         {
             Console.WriteLine("Rendering Game Component");
 
             await GraphicsDevice.Initialize();
-            await GraphicsDevice.Clear(1.0f, 0.0f, 0.0f, 1.0f);
+            await GraphicsDevice.LoadShaders(VertexShader2D.Source, FragmentShader2D.Source);
+
+            GraphicsDevice.OnReady += async (gameTime) =>
+            {
+                await Update(gameTime);
+                await Render();
+            };
         }
 
         await base.OnAfterRenderAsync(firstRender);
+    }
+
+    private Task Update(GameTime gameTime)
+    {
+        return Task.CompletedTask;
+    }
+
+    private async Task Render()
+    {
+        await GraphicsDevice.Clear(Color.Random());
     }
 }
