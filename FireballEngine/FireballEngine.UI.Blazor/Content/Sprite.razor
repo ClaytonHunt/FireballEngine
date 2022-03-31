@@ -1,0 +1,20 @@
+﻿@using FireballEngine.Core.Content
+@using FireballEngine.Core.Graphics
+
+@code {
+    [Parameter]
+    public string Label { get; set; } = string.Empty;
+
+    [Parameter]
+    public string Source { get; set; } = string.Empty;
+
+    [CascadingParameter]
+    IContentManager Content { get; set; } = default!;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await Content.Register<Texture2D>(Label, Source);
+
+        await base.OnAfterRenderAsync(firstRender);
+    }
+}

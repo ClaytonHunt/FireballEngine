@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Breakout", "Breakout\Breako
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FireballEngine.Core", "FireballEngine.Core\FireballEngine.Core.csproj", "{671567D9-897D-4229-9BDB-C4F867FC032D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FireballEngine.UI.Blazor", "FireballEngine.UI.Blazor\FireballEngine.UI.Blazor.csproj", "{109F10AB-C48A-4B2F-A89F-2344E9FE875A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FireballEngine.UI.Blazor", "FireballEngine.UI.Blazor\FireballEngine.UI.Blazor.csproj", "{109F10AB-C48A-4B2F-A89F-2344E9FE875A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
