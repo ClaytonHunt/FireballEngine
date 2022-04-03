@@ -35,7 +35,12 @@
 
     private WebGLShader VertexShader2D { get; set; } = new WebGLShader();
     private WebGLShader FragmentShader2D { get; set; } = new WebGLShader();
+    private IList<ColorVertex> Element = new List<ColorVertex>();
+    private IList<int> ElementTrianglesShape = new List<int>();
     private IList<ColorVertex> Triangles = new List<ColorVertex>();
+    private IList<ColorVertex> Lines = new List<ColorVertex>();
+    private IList<ColorVertex> ElementStar = new List<ColorVertex>();
+    private IList<int> ElementStarShape = new List<int>();
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -44,7 +49,67 @@
             Console.WriteLine("Rendering Game Component");
 
             await GraphicsDevice.Initialize();
-            await GraphicsDevice.LoadShaders(VertexShader2D.Source, FragmentShader2D.Source);
+            await GraphicsDevice.LoadShaders(VertexShader2D.Source, FragmentShader2D.Source);            
+
+            Element = new ColorVertex[]
+            {
+                // Rectangle #1
+                new ColorVertex(new Color(1f, 0f, 0f, 1.0f), new Vertex(-0.5f, -0.5f, 0.0f)),
+                new ColorVertex(new Color(0f, 1f, 0f, 1.0f), new Vertex(-0.5f, 0.5f, 0.0f)),
+                new ColorVertex(new Color(0f, 0f, 1f, 1.0f), new Vertex(0.5f, 0.5f, 0.0f)),
+                new ColorVertex(new Color(1f, 1f, 0f, 1.0f), new Vertex(0.5f, -0.5f, 0.0f)),                
+            };
+
+            ElementTrianglesShape = new int[]
+            {
+                // Triangle #1
+                0, 1, 2,
+
+                // Triangle #2
+                2, 3, 0
+            };
+
+            ElementStar = new ColorVertex[]
+            {
+                // Star #1
+                new ColorVertex(new Color(0xFF05BD, 1.0f), new Vertex(-0.17f, 0.25f, 0.0f)),
+                new ColorVertex(Color.PureRed, new Vertex(0.0f, 0.75f, 0.0f)),
+                new ColorVertex(Color.Orange, new Vertex(0.17f, 0.25f, 0.0f)),
+                new ColorVertex(Color.Yellow, new Vertex(0.6f, 0.25f, 0.0f)),
+                new ColorVertex(new Color(0x36FF05, 1.0f), new Vertex(0.27f, -0.15f, 0.0f)),
+                new ColorVertex(Color.PureGreen, new Vertex(0.5f, -0.75f, 0.0f)),
+                new ColorVertex(Color.Cyan, new Vertex(0.0f, -0.4f, 0.0f)),
+                new ColorVertex(Color.PureBlue, new Vertex(-0.5f, -0.75f, 0.0f)),
+                new ColorVertex(new Color(0x5005FF, 1.0f), new Vertex(-0.27f, -0.15f, 0.0f)),
+                new ColorVertex(new Color(0xCA05FF, 1.0f), new Vertex(-0.6f, 0.25f, 0.0f)),
+            };
+
+            ElementStarShape = new int[]
+            {
+                // Triangle #1
+                0, 1, 2,
+
+                // Triangle #2
+                2, 3, 4,
+
+                // Triangle #3
+                4, 5, 6,
+
+                // Triangle #4
+                6, 7, 8,
+
+                // Triangle #5
+                8, 9, 0,
+
+                // Triangle #6
+                0, 2, 8,
+
+                // Triangle #7
+                2, 4, 8,
+
+                // Triangle #8
+                8, 4, 6,
+            };
 
             Triangles = new ColorVertex[]
             {
@@ -59,7 +124,28 @@
                 new ColorVertex(new Color(1f, 0f, 0f, 1.0f), new Vertex(-0.5f, -0.5f, 0.0f))
             };
 
-            await GraphicsDevice.CreatePrimitives<ColorVertex>("First Shape", Triangles, 4, 3);
+            Lines = new ColorVertex[]
+            {
+                // Line #1
+                new ColorVertex(new Color(1f, 0f, 0f, 1.0f), new Vertex(-0.5f, -0.5f, 0.0f)),
+                new ColorVertex(new Color(0f, 1f, 0f, 1.0f), new Vertex(-0.5f, 0.5f, 0.0f)),
+
+                // Line #2
+                new ColorVertex(new Color(0f, 1f, 0f, 1.0f), new Vertex(-0.5f, 0.5f, 0.0f)),
+                new ColorVertex(new Color(0f, 0f, 1f, 1.0f), new Vertex(0.5f, 0.5f, 0.0f)),
+
+                // Line #3
+                new ColorVertex(new Color(0f, 0f, 1f, 1.0f), new Vertex(0.5f, 0.5f, 0.0f)),
+                new ColorVertex(new Color(1f, 0f, 0f, 1.0f), new Vertex(-0.5f, -0.5f, 0.0f)),
+
+                // Line #4
+                new ColorVertex(new Color(0f, 0f, 1f, 1.0f), new Vertex(0.5f, 0.5f, 0.0f)),
+                new ColorVertex(new Color(1f, 1f, 0f, 1.0f), new Vertex(0.5f, -0.5f, 0.0f)),
+
+                // Line #5
+                new ColorVertex(new Color(1f, 1f, 0f, 1.0f), new Vertex(0.5f, -0.5f, 0.0f)),
+                new ColorVertex(new Color(1f, 0f, 0f, 1.0f), new Vertex(-0.5f, -0.5f, 0.0f)),                
+            };            
 
             GraphicsDevice.OnFrame += async (gameTime) =>
             {
@@ -71,14 +157,24 @@
         await base.OnAfterRenderAsync(firstRender);
     }
 
-    private Task Update(GameTime gameTime)
+    private async Task Update(GameTime gameTime)
     {
-        return Task.CompletedTask;
+        //await GraphicsDevice.CreatePrimitives<ColorVertex>("Draw_Triangles", Triangles, 4, 3);
+        //await GraphicsDevice.CreatePrimitives<ColorVertex>("Draw_Lines", Lines, 4, 3);
+        //await GraphicsDevice.CreatePrimitives<ColorVertex>("Draw_Element_Square", Element, 4, 3);
+        //await GraphicsDevice.CreateShape("Draw_Element_Square", ElementTrianglesShape);
+        await GraphicsDevice.CreatePrimitives<ColorVertex>("Draw_Element_Star", ElementStar, 4, 3);
+        await GraphicsDevice.CreateShape("Draw_Element_Star", ElementStarShape);
+
+        // return Task.CompletedTask;
     }
 
     private async Task Render()
     {
         await GraphicsDevice.Clear(Color.CornFlowerBlue);
-        await GraphicsDevice.DrawPrimitives("First Shape", 0, Triangles.Count);
+        // await GraphicsDevice.DrawTriangles("Draw_Triangles", 0, Triangles.Count);
+        // await GraphicsDevice.DrawLines("Draw_Lines", 0, Lines.Count);
+        // await GraphicsDevice.DrawShape("Draw_Element_Square", 0, ElementTrianglesShape.Count);
+        await GraphicsDevice.DrawShape("Draw_Element_Star", 0, ElementStarShape.Count);
     }
 }

@@ -78,12 +78,41 @@ namespace FireballEngine.Core.Graphics
             }
         }
 
-        public Task DrawPrimitives(string alias, int offset, int size)
+        public async Task CreateShape(string alias, IEnumerable<int> data)
+        {            
+            await CreateElementArrayBuffer(alias, data);            
+        }
+
+        public Task DrawTriangles(string alias, int offset, int size)
         {
             if (JsModule == null)
                 return Task.CompletedTask;
 
             return Task.FromResult(((IJSUnmarshalledObjectReference)JsModule).InvokeUnmarshalled<ValueTuple<string, int, int>, object>("drawTriangles", new (alias, offset, size)));
+        }
+
+        public Task DrawLines(string alias, int offset, int size)
+        {
+            if (JsModule == null)
+                return Task.CompletedTask;
+
+            return Task.FromResult(((IJSUnmarshalledObjectReference)JsModule).InvokeUnmarshalled<ValueTuple<string, int, int>, object>("drawLines", new(alias, offset, size)));
+        }
+
+        public Task DrawShape(string alias, int offset, int size)
+        {
+            if (JsModule == null)
+                return Task.CompletedTask;
+
+            return Task.FromResult(((IJSUnmarshalledObjectReference)JsModule).InvokeUnmarshalled<ValueTuple<string, int, int>, object>("drawElement", new(alias, offset, size)));
+        }
+
+        public Task DrawShapeOutline(string alias, int offset, int size)
+        {
+            if (JsModule == null)
+                return Task.CompletedTask;
+
+            return Task.FromResult(((IJSUnmarshalledObjectReference)JsModule).InvokeUnmarshalled<ValueTuple<string, int, int>, object>("drawShapeOutline", new(alias, offset, size)));
         }
 
         private Task CreateVertexArray(string alias)
@@ -102,12 +131,18 @@ namespace FireballEngine.Core.Graphics
             return Task.FromResult(((IJSUnmarshalledObjectReference)JsModule).InvokeUnmarshalled<ValueTuple<string, IEnumerable<T>>, object>("createArrayBuffer", new (alias, data)));
         }
 
-        private Task CreateVertexAttribute(int location, int size, int structureSize, int offset)
+        private Task CreateElementArrayBuffer(string alias, IEnumerable<int> data)
         {
             if (JsModule == null)
                 return Task.CompletedTask;
 
-            Console.WriteLine($"C# VertexAttribute: {location} {size} {structureSize} {offset}");
+            return Task.FromResult(((IJSUnmarshalledObjectReference)JsModule).InvokeUnmarshalled<ValueTuple<string, IEnumerable<int>>, object>("createElementArrayBuffer", new(alias, data)));
+        }
+
+        private Task CreateVertexAttribute(int location, int size, int structureSize, int offset)
+        {
+            if (JsModule == null)
+                return Task.CompletedTask;
 
             return Task.FromResult(((IJSUnmarshalledObjectReference)JsModule).InvokeUnmarshalled<ValueTuple<int, int, int, int>, object>("createVertexAttribute", new (location, size, structureSize, offset)));
         }        

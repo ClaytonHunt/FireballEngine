@@ -95,12 +95,12 @@
     createVertexArray(baseAddress) {
         const alias = Blazor.platform.readStringField(baseAddress);
 
-        const pointer = {
-            id: alias,
-            vao: this.gl.createVertexArray()
-        };
+        const pointer = this.pointers.filter(x => x.id == alias)[0] ?? {};
+
+        pointer.id = alias;
+        pointer.vao = this.gl.createVertexArray();
         
-        this.gl.bindVertexArray(pointer.vao);
+        this.gl.bindVertexArray(pointer.vao);        
 
         this.pointers.push(pointer);
     }
@@ -147,6 +147,33 @@
         this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(data), this.gl.STATIC_DRAW);
     }
 
+    createElementArrayBuffer(baseAddress) {
+        const alias = Blazor.platform.readStringField(baseAddress);
+        const dataEntries = Blazor.platform.readObjectField(baseAddress, 4);
+        const dataLength = Blazor.platform.getArrayLength(dataEntries);
+
+        const data = [];
+
+        for (let i = 0; i < dataLength; i++) {
+            const entry = Blazor.platform.getArrayEntryPtr(dataEntries, i, 4);
+
+            const position = Blazor.platform.readInt16Field(entry);
+
+            data.push(position);
+        }
+
+        const pointer = this.pointers.filter(p => p.id == alias)[0];
+
+        if (pointer == null) {
+            throw `${alias} is does not exist`;
+        }
+
+        pointer.ebo = this.gl.createBuffer();
+
+        this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, pointer.ebo);
+        this.gl.bufferData(this.gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(data), this.gl.STATIC_DRAW);
+    }
+
     createVertexAttribute(baseAddress) {
         const location = Blazor.platform.readInt16Field(baseAddress, 0);
         const size = Blazor.platform.readInt16Field(baseAddress, 4);
@@ -170,6 +197,53 @@
 
         this.gl.bindVertexArray(pointer.vao);
         this.gl.drawArrays(this.gl.TRIANGLES, offset, count);
+    }
+
+    drawLines(baseAddress) {
+        const alias = Blazor.platform.readStringField(baseAddress);
+        const offset = Blazor.platform.readInt16Field(baseAddress, 4);
+        const count = Blazor.platform.readInt16Field(baseAddress, 8);
+
+        const pointer = this.pointers.filter(p => p.id == alias)[0];
+
+        if (pointer == null) {
+            throw `${alias} is does not exist`;
+        }
+
+        this.gl.bindVertexArray(pointer.vao);
+        this.gl.drawArrays(this.gl.LINES, offset, count);
+    }
+
+    drawElement(baseAddress) {
+        const alias = Blazor.platform.readStringField(baseAddress);
+        const offset = Blazor.platform.readInt16Field(baseAddress, 4);
+        const count = Blazor.platform.readInt16Field(baseAddress, 8);
+
+        const pointer = this.pointers.filter(p => p.id == alias)[0];
+
+        if (pointer == null) {
+            throw `${alias} is does not exist`;
+        }
+
+        console.log(`Alias: ${alias}, Offset: ${offset}, Count: ${count}`);
+
+        this.gl.bindVertexArray(pointer.vao);
+        this.gl.drawElements(this.gl.TRIANGLES, count, this.gl.UNSIGNED_SHORT, offset);
+    }
+
+    drawShapeOutline(baseAddress) {
+        const alias = Blazor.platform.readStringField(baseAddress);
+        const offset = Blazor.platform.readInt16Field(baseAddress, 4);
+        const count = Blazor.platform.readInt16Field(baseAddress, 8);
+
+        const pointer = this.pointers.filter(p => p.id == alias)[0];
+
+        if (pointer == null) {
+            throw `${alias} is does not exist`;
+        }
+
+        this.gl.bindVertexArray(pointer.vao);
+        this.gl.drawElements(this.gl.LINE_STRIP, count, this.gl.UNSIGNED_INT, offset);
     }
 }
 
