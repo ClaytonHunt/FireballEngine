@@ -1,10 +1,14 @@
-﻿using Microsoft.JSInterop;
+﻿using FireballEngine.Core.Math;
+using Microsoft.JSInterop;
 using System.Runtime.InteropServices;
 
 namespace FireballEngine.Core.Graphics
 {
     public class CanvasGraphicsDevice : IGraphicsDevice
     {
+        public int Width => PresentationParameters.BackbufferWidth;
+        public int Height => PresentationParameters.BackbufferHeight;
+
         private readonly IJSRuntime _jsRuntime;
         private TimeSpan totalGameTime = new TimeSpan();        
 
@@ -46,12 +50,20 @@ namespace FireballEngine.Core.Graphics
             await JsModule.InvokeVoidAsync("clear", color.Red, color.Green, color.Blue, color.Alpha);
         }
 
-        public async Task LoadShaders(string vertexShaderSource, string fragmentShaderSource)
+        public async Task LoadShaders(string alias, string vertexShaderSource, string fragmentShaderSource)
         {
             if (JsModule == null) 
                 return;
 
-            await JsModule.InvokeVoidAsync("loadShaderProgram", vertexShaderSource, fragmentShaderSource);
+            await JsModule.InvokeVoidAsync("loadShaderProgram", alias, vertexShaderSource, fragmentShaderSource);
+        }
+
+        public Task SetUniformMatrix4(string shaderAlias, string uniformAlias, Matrix4 matrix)
+        {
+            if (JsModule == null)
+                return Task.CompletedTask;
+
+            return Task.FromResult(((IJSUnmarshalledObjectReference)JsModule).InvokeUnmarshalled<ValueTuple<string, string, Matrix4>, object>("setUniformMatrix4", new(shaderAlias, uniformAlias, matrix)));
         }
 
         [JSInvokable]
@@ -78,9 +90,10 @@ namespace FireballEngine.Core.Graphics
             }
         }
 
-        public async Task CreateShape(string alias, IEnumerable<int> data)
-        {            
-            await CreateElementArrayBuffer(alias, data);            
+        public async Task CreateShape<T>(string alias, IEnumerable<T> vertexData, IEnumerable<int> shapeData, params int[] sizes)
+        {
+            await CreatePrimitives(alias, vertexData, sizes);
+            await CreateElementArrayBuffer(alias, shapeData);            
         }
 
         public Task DrawTriangles(string alias, int offset, int size)

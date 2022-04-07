@@ -7,6 +7,7 @@
         this.gl = this.canvas.getContext('webgl2');
         this.gl.viewport(0, 0, this.gl.canvas.width, this.gl.canvas.height);
 
+        this.shaders = [];
         this.pointers = [];
 
         this.previousTimestamp = 0;
@@ -51,13 +52,35 @@
         this.gl.clear(this.gl.COLOR_BUFFER_BIT);
     }
 
-    loadShaderProgram(vertexSource, fragmentSource) {
+    loadShaderProgram(alias, vertexSource, fragmentSource) {
         var vertexShader = this.compileShader(vertexSource, this.gl.VERTEX_SHADER);
-        var fragmentShader = this.compileShader(fragmentSource, this.gl.FRAGMENT_SHADER);
+        var fragmentShader = this.compileShader(fragmentSource, this.gl.FRAGMENT_SHADER);        
 
-        this.shaderProgram = this.createProgram(vertexShader, fragmentShader);
+        let shaderProgram = {
+            id: alias,
+            program: this.createProgram(vertexShader, fragmentShader)
+        };
 
-        this.gl.useProgram(this.shaderProgram);
+        this.shaders.push(shaderProgram);
+
+        this.gl.useProgram(shaderProgram.program);
+    }
+
+    setUniformMatrix4(baseAddress) {
+        const shaderAlias = Blazor.platform.readStringField(baseAddress, 0);
+        const uniformAlias = Blazor.platform.readStringField(baseAddress, 4);
+        const matrixEntry = Blazor.platform.readStructField(baseAddress, 8);
+
+        const matrix = [];
+
+        for (let i = 0; i < 16; i++) {
+            matrix.push(Blazor.platform.readFloatField(matrixEntry, i * 4));
+        }
+
+        const shader = this.shaders.filter(s => s.id == shaderAlias)[0];
+
+        const uniformOffset = this.gl.getUniformLocation(shader.program, uniformAlias);
+        this.gl.uniformMatrix4fv(uniformOffset, false, matrix);
     }
 
     compileShader(shaderSource, shaderType) {
@@ -225,8 +248,6 @@
             throw `${alias} is does not exist`;
         }
 
-        console.log(`Alias: ${alias}, Offset: ${offset}, Count: ${count}`);
-
         this.gl.bindVertexArray(pointer.vao);
         this.gl.drawElements(this.gl.TRIANGLES, count, this.gl.UNSIGNED_SHORT, offset);
     }
@@ -243,7 +264,7 @@
         }
 
         this.gl.bindVertexArray(pointer.vao);
-        this.gl.drawElements(this.gl.LINE_STRIP, count, this.gl.UNSIGNED_INT, offset);
+        this.gl.drawElements(this.gl.LINES, count, this.gl.UNSIGNED_INT, offset);
     }
 }
 
