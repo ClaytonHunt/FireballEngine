@@ -1,4 +1,6 @@
-﻿namespace FireballEngine.Core.Math
+﻿using Mathematics = System.Math;
+
+namespace FireballEngine.Core.Math
 {
     public struct Vector2 : IEquatable<Vector2>
     {
@@ -22,9 +24,29 @@
             Y = y;
         }
 
+        public static Vector2 Normalize(Vector2 vector)
+        {
+            return vector / vector.Magnitude();
+        }
+
+        public float Magnitude()
+        {
+            return (float)Mathematics.Sqrt(Mathematics.Pow(X, 2) + Mathematics.Pow(Y, 2));
+        }        
+
         public bool Equals(Vector2 other)
         {
-            throw new NotImplementedException();
+            return X == other.X && Y == other.Y;
+        }
+
+        public static Vector2 operator /(Vector2 vector, double value)
+        {
+            return new Vector2(vector.X / (float)value, vector.Y / (float)value);
+        }
+
+        public static float crossProduct(Vector2 v1, Vector2 v2)
+        {
+            return v1.X * v2.Y - v1.Y * v2.X;
         }
     }
 }

@@ -78,7 +78,7 @@ namespace FireballEngine.Core.Graphics
         public async Task CreatePrimitives<T>(string alias, IEnumerable<T> data, params int[] sizes)
         {
             await CreateVertexArray(alias);
-            await CreateArrayBuffer(alias, data);
+            await CreateArrayBuffer(alias, data, sizes.Aggregate((a, b) => a + b));
 
             var dataSize = Marshal.SizeOf(typeof(T));
 
@@ -94,6 +94,14 @@ namespace FireballEngine.Core.Graphics
         {
             await CreatePrimitives(alias, vertexData, sizes);
             await CreateElementArrayBuffer(alias, shapeData);            
+        }
+
+        public Task CreateTexture(Texture2D texture)
+        {
+            if (JsModule == null)
+                return Task.CompletedTask;
+
+            return Task.FromResult(((IJSUnmarshalledObjectReference)JsModule).InvokeUnmarshalled<ValueTuple<string, string>, object>("createTexture", new(texture.Name, texture.Source)));
         }
 
         public Task DrawTriangles(string alias, int offset, int size)
@@ -136,12 +144,12 @@ namespace FireballEngine.Core.Graphics
             return Task.FromResult(((IJSUnmarshalledObjectReference)JsModule).InvokeUnmarshalled<ValueTuple<string>, object>("createVertexArray", new (alias)));
         }
 
-        private Task CreateArrayBuffer<T>(string alias, IEnumerable<T> data)
+        private Task CreateArrayBuffer<T>(string alias, IEnumerable<T> data, int size)
         {
             if (JsModule == null)
-                return Task.CompletedTask;
+                return Task.CompletedTask;            
 
-            return Task.FromResult(((IJSUnmarshalledObjectReference)JsModule).InvokeUnmarshalled<ValueTuple<string, IEnumerable<T>>, object>("createArrayBuffer", new (alias, data)));
+            return Task.FromResult(((IJSUnmarshalledObjectReference)JsModule).InvokeUnmarshalled<ValueTuple<string, int, IEnumerable<T>>, object>("createArrayBuffer", new (alias, size, data)));
         }
 
         private Task CreateElementArrayBuffer(string alias, IEnumerable<int> data)

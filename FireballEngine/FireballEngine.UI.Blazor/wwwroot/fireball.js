@@ -6,6 +6,9 @@
 
         this.gl = this.canvas.getContext('webgl2');
         this.gl.viewport(0, 0, this.gl.canvas.width, this.gl.canvas.height);
+        this.gl.enable(this.gl.CULL_FACE);
+        this.gl.cullFace(this.gl.BACK);
+         this.gl.enable(this.gl.DEPTH_TEST);
 
         this.shaders = [];
         this.pointers = [];
@@ -49,7 +52,7 @@
 
     clear(red, green, blue, alpha) {
         this.gl.clearColor(red, green, blue, alpha);
-        this.gl.clear(this.gl.COLOR_BUFFER_BIT);
+        this.gl.clear(this.gl.DEPTH_BUFFER_BIT | this.gl.COLOR_BUFFER_BIT);
     }
 
     loadShaderProgram(alias, vertexSource, fragmentSource) {
@@ -130,32 +133,20 @@
 
     createArrayBuffer(baseAddress) {
         const alias = Blazor.platform.readStringField(baseAddress);
-        const dataEntries = Blazor.platform.readObjectField(baseAddress, 4);
+        const structSize = Blazor.platform.readInt32Field(baseAddress, 4);
+        const dataEntries = Blazor.platform.readObjectField(baseAddress, 8);
         const dataLength = Blazor.platform.getArrayLength(dataEntries);
 
         const data = [];
 
         for (let i = 0; i < dataLength; i++) {
-            const entry = Blazor.platform.getArrayEntryPtr(dataEntries, i, 28);
+            const entry = Blazor.platform.getArrayEntryPtr(dataEntries, i, structSize * 4);
 
-            const colorVertex = Blazor.platform.readStructField(entry);            
+            const vertexStruct = Blazor.platform.readStructField(entry);
 
-            const red = Blazor.platform.readFloatField(colorVertex, 0);
-            const green = Blazor.platform.readFloatField(colorVertex, 4);
-            const blue = Blazor.platform.readFloatField(colorVertex, 8);
-            const alpha = Blazor.platform.readFloatField(colorVertex, 12);
-
-            const x = Blazor.platform.readFloatField(colorVertex, 16);
-            const y = Blazor.platform.readFloatField(colorVertex, 20);
-            const z = Blazor.platform.readFloatField(colorVertex, 24);
-
-            data.push(red);
-            data.push(green);
-            data.push(blue);
-            data.push(alpha);
-            data.push(x);
-            data.push(y);
-            data.push(z);
+            for (let j = 0; j < structSize; j++) {                
+                data.push(Blazor.platform.readFloatField(vertexStruct, j * 4));
+            }            
         }
 
         const pointer = this.pointers.filter(p => p.id == alias)[0];
@@ -195,6 +186,40 @@
 
         this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, pointer.ebo);
         this.gl.bufferData(this.gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(data), this.gl.STATIC_DRAW);
+    }
+
+    createTexture(baseAddress) {
+        const alias = Blazor.platform.readStringField(baseAddress, 0);
+        const imageSrc = Blazor.platform.readStringField(baseAddress, 4);
+
+        const pointer = this.pointers.filter(p => p.id == alias)[0];
+
+        if (pointer == null) {
+            throw `${alias} is does not exist`;
+        }        
+
+        const loadImage = () => new Promise(resolve => {
+            const image = new Image();
+            image.addEventListener('load', () => resolve(image));
+            image.src = imageSrc;
+        });
+
+        const run = async () => {
+            const image = await loadImage();
+
+            this.gl.pixelStorei(this.gl.UNPACK_FLIP_Y_WEBGL, true);
+
+            pointer.texture = this.gl.createTexture();
+            this.gl.bindTexture(this.gl.TEXTURE_2D, pointer.texture);            
+            this.gl.texImage2D(this.gl.TEXTURE_2D, 0, this.gl.RGBA, this.gl.RGBA, this.gl.UNSIGNED_BYTE, image);
+            this.gl.generateMipmap(this.gl.TEXTURE_2D);
+            this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_S, this.gl.REPEAT);
+            this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_T, this.gl.REPEAT);
+            this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MIN_FILTER, this.gl.NEAREST);
+            this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MAG_FILTER, this.gl.NEAREST);
+        };
+
+        run();
     }
 
     createVertexAttribute(baseAddress) {
@@ -249,6 +274,11 @@
         }
 
         this.gl.bindVertexArray(pointer.vao);
+
+        if (pointer.texture) {
+            this.gl.bindTexture(this.gl.TEXTURE_2D, pointer.texture);
+        }
+
         this.gl.drawElements(this.gl.TRIANGLES, count, this.gl.UNSIGNED_SHORT, offset);
     }
 

@@ -9,6 +9,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FireballEngine.Core", "Fire
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FireballEngine.UI.Blazor", "FireballEngine.UI.Blazor\FireballEngine.UI.Blazor.csproj", "{109F10AB-C48A-4B2F-A89F-2344E9FE875A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FireballEngine.Core.Tests", "FireballEngine.Core.Tests\FireballEngine.Core.Tests.csproj", "{0094926E-3514-4713-A9C8-A31C81779E94}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{109F10AB-C48A-4B2F-A89F-2344E9FE875A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{109F10AB-C48A-4B2F-A89F-2344E9FE875A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{109F10AB-C48A-4B2F-A89F-2344E9FE875A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0094926E-3514-4713-A9C8-A31C81779E94}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0094926E-3514-4713-A9C8-A31C81779E94}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0094926E-3514-4713-A9C8-A31C81779E94}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0094926E-3514-4713-A9C8-A31C81779E94}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

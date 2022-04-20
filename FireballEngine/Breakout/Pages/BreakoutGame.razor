@@ -5,29 +5,35 @@
 
 <WebGLShader @ref=VertexShader2D>#version 300 es
     // Vertex Shader
-    layout(location = 0) in vec4 aColor;
-    layout(location = 1) in vec3 aPosition;
-    out vec4 fColor;
-
-    uniform mat4 uProjection;
+    layout(location = 0) in vec3 aPosition;
+    layout(location = 1) in vec2 aTexCoord;
     
+    uniform mat4 uProjection;
+    uniform mat4 uView;
+    uniform mat4 uModel;
+
+    out vec2 vTexCoord;
+
     void main()
     {
-        fColor = aColor;
-        gl_Position = uProjection * vec4(aPosition, 1.0);
+      vTexCoord = aTexCoord;
+      gl_Position = uProjection * uView * uModel * vec4(aPosition, 1.0);
     }
 </WebGLShader>
 
 <WebGLShader @ref=FragmentShader2D>#version 300 es
     // Fragment shader
-    precision highp float;
+    precision mediump float;
 
-    out vec4 FragColor;
-    in vec4 fColor;
+    in vec2 vTexCoord;
+
+    uniform sampler2D uSampler;
+
+    out vec4 FragColor;    
 
     void main()
     {
-        FragColor = fColor;
+        FragColor = texture(uSampler, vTexCoord);
     }
 </WebGLShader>
 
@@ -37,13 +43,19 @@
 
     private WebGLShader VertexShader2D { get; set; } = new WebGLShader();
     private WebGLShader FragmentShader2D { get; set; } = new WebGLShader();
-    private IList<ColorVertex> Element = new List<ColorVertex>();
-    private IList<int> ElementTrianglesShape = new List<int>();
+    private IList<UVVertex> Element = new List<UVVertex>();
+    private IList<int> ElementCubeShape = new List<int>();
     private IList<ColorVertex> Triangles = new List<ColorVertex>();
     private IList<ColorVertex> Lines = new List<ColorVertex>();
     private IList<ColorVertex> ElementStar = new List<ColorVertex>();
     private IList<int> ElementStarShape = new List<int>();
+    private Vector3 CameraPosition = new Vector3(0, 0, 0);
     private Matrix4 OrthoMatrix = new Matrix4();
+    private Matrix4 PerspectiveMatrix = new Matrix4();
+    private Matrix4 Camera1 = new Matrix4();
+    private Matrix4 Camera2 = new Matrix4();
+    private Matrix4 CubeTransformMatrix = Matrix4.Identity;
+    private Texture2D GrassTexture = new Texture2D("Draw_Element_Cube", "/images/grass_block_small.png", 64, 48);
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -52,143 +64,169 @@
             Console.WriteLine("Rendering Game Component");
 
             await GraphicsDevice.Initialize();
-            await GraphicsDevice.LoadShaders("MainShader", VertexShader2D.Source, FragmentShader2D.Source);            
+            await GraphicsDevice.LoadShaders("MainShader", VertexShader2D.Source, FragmentShader2D.Source);
 
-            //Element = new ColorVertex[]
+            Element = new UVVertex[]
+            {
+                // Front #1
+                new UVVertex(new Vertex(-1, -1, 1), GrassTexture.GetCoordinate(0, 32)), // 0
+                new UVVertex(new Vertex(-1, 1, 1), GrassTexture.GetCoordinate(16, 32)), // 1
+                new UVVertex(new Vertex(1, 1, 1), GrassTexture.GetCoordinate(16, 16)), // 2               
+                new UVVertex(new Vertex(1, -1, 1), GrassTexture.GetCoordinate(0, 16)), // 3
+
+                // Back #2
+                new UVVertex(new Vertex(1, -1, -1), GrassTexture.GetCoordinate(48, 16)), // 4
+                new UVVertex(new Vertex(1, 1, -1), GrassTexture.GetCoordinate(32, 16)), // 5
+                new UVVertex(new Vertex(-1, 1, -1), GrassTexture.GetCoordinate(32, 32)), // 6
+                new UVVertex(new Vertex(-1, -1, -1), GrassTexture.GetCoordinate(48, 32)), // 7
+
+                // Right #1
+                new UVVertex(new Vertex(1, 1, 1), GrassTexture.GetCoordinate(16, 16)), // 0
+                new UVVertex(new Vertex(1, -1, 1), GrassTexture.GetCoordinate(16, 0)), // 3
+                new UVVertex(new Vertex(1, -1, -1), GrassTexture.GetCoordinate(32, 0)), // 4               
+                new UVVertex(new Vertex(1, 1, -1), GrassTexture.GetCoordinate(32, 16)), // 5
+
+                // Left #1
+                new UVVertex(new Vertex(-1, -1, 1), GrassTexture.GetCoordinate(16, 48)), // 0
+                new UVVertex(new Vertex(-1, 1, 1), GrassTexture.GetCoordinate(16, 32)), // 1
+                new UVVertex(new Vertex(-1, 1, -1), GrassTexture.GetCoordinate(32, 32)), // 5               
+                new UVVertex(new Vertex(-1, -1, -1), GrassTexture.GetCoordinate(32, 48)), // 4     
+
+                // Top #1
+                new UVVertex(new Vertex(-1, 1, 1), GrassTexture.GetCoordinate(16, 32)), // 1
+                new UVVertex(new Vertex(1, 1, 1), GrassTexture.GetCoordinate(16, 16)), // 2
+                new UVVertex(new Vertex(1, 1, -1), GrassTexture.GetCoordinate(32, 16)), // 6
+                new UVVertex(new Vertex(-1, 1, -1), GrassTexture.GetCoordinate(32, 32)), // 5
+
+                // Bottom #1
+                new UVVertex(new Vertex(-1, -1, 1), GrassTexture.GetCoordinate(64, 16)), // 0
+                new UVVertex(new Vertex(-1, -1, -1), GrassTexture.GetCoordinate(48, 16)), // 4
+                new UVVertex(new Vertex(1, -1, -1), GrassTexture.GetCoordinate(48, 32)), // 7
+                new UVVertex(new Vertex(1, -1, 1), GrassTexture.GetCoordinate(64, 32)), // 3
+            };
+
+            ElementCubeShape = new int[]
+            {
+                // Front Face
+                2, 1, 0,
+                2, 0, 3,
+
+                // Back Face
+                4, 7, 6,
+                4, 6, 5,
+
+                // Right Face
+                8, 9, 10,
+                8, 10, 11,                
+
+                // Left Face
+                12, 13, 14,
+                12, 14, 15,
+
+                // Top Face
+                16, 17, 18,
+                16, 18, 19,
+
+                // Bottom Face
+                20, 21, 22,
+                20, 22, 23,
+            };
+
+            //ElementStar = new ColorVertex[]
             //{
-            //    // Rectangle #1
-            //    new ColorVertex(new Color(1f, 0f, 0f, 1.0f), new Vertex(-0.5f, -0.5f, 0.0f)),
-            //    new ColorVertex(new Color(0f, 1f, 0f, 1.0f), new Vertex(-0.5f, 0.5f, 0.0f)),
-            //    new ColorVertex(new Color(0f, 0f, 1f, 1.0f), new Vertex(0.5f, 0.5f, 0.0f)),
-            //    new ColorVertex(new Color(1f, 1f, 0f, 1.0f), new Vertex(0.5f, -0.5f, 0.0f)),                
+            //    // Star #1
+            //    new ColorVertex(new Color(0xFF05BD, 1.0f), new Vertex(-0.17f, 0.25f, 0.0f)),
+            //    new ColorVertex(Color.PureRed, new Vertex(0.0f, 0.75f, 0.0f)),
+            //    new ColorVertex(Color.Orange, new Vertex(0.17f, 0.25f, 0.0f)),
+            //    new ColorVertex(Color.Yellow, new Vertex(0.6f, 0.25f, 0.0f)),
+            //    new ColorVertex(new Color(0x36FF05, 1.0f), new Vertex(0.27f, -0.15f, 0.0f)),
+            //    new ColorVertex(Color.PureGreen, new Vertex(0.5f, -0.75f, 0.0f)),
+            //    new ColorVertex(Color.Cyan, new Vertex(0.0f, -0.4f, 0.0f)),
+            //    new ColorVertex(Color.PureBlue, new Vertex(-0.5f, -0.75f, 0.0f)),
+            //    new ColorVertex(new Color(0x5005FF, 1.0f), new Vertex(-0.27f, -0.15f, 0.0f)),
+            //    new ColorVertex(new Color(0xCA05FF, 1.0f), new Vertex(-0.6f, 0.25f, 0.0f)),
             //};
 
-            Element = new ColorVertex[]
-            {
-                // Rectangle #1
-                new ColorVertex(new Color(1f, 0f, 0f, 1.0f), new Vertex(200, 100, 0.0f)),
-                new ColorVertex(new Color(0f, 1f, 0f, 1.0f), new Vertex(200, 500, 0.0f)),
-                new ColorVertex(new Color(0f, 0f, 1f, 1.0f), new Vertex(600, 500, 0.0f)),
-                new ColorVertex(new Color(1f, 1f, 0f, 1.0f), new Vertex(600, 100, 0.0f)),                
-            };
+            //ElementStarShape = new int[]
+            //{
+            //    // Triangle #1
+            //    0, 1, 2,
 
-            ElementTrianglesShape = new int[]
-            {
-                // Triangle #1
-                0, 1, 2,
+            //    // Triangle #2
+            //    2, 3, 4,
 
-                // Triangle #2
-                2, 3, 0
-            };
+            //    // Triangle #3
+            //    4, 5, 6,
 
-            ElementStar = new ColorVertex[]
-            {
-                // Star #1
-                new ColorVertex(new Color(0xFF05BD, 1.0f), new Vertex(-0.17f, 0.25f, 0.0f)),
-                new ColorVertex(Color.PureRed, new Vertex(0.0f, 0.75f, 0.0f)),
-                new ColorVertex(Color.Orange, new Vertex(0.17f, 0.25f, 0.0f)),
-                new ColorVertex(Color.Yellow, new Vertex(0.6f, 0.25f, 0.0f)),
-                new ColorVertex(new Color(0x36FF05, 1.0f), new Vertex(0.27f, -0.15f, 0.0f)),
-                new ColorVertex(Color.PureGreen, new Vertex(0.5f, -0.75f, 0.0f)),
-                new ColorVertex(Color.Cyan, new Vertex(0.0f, -0.4f, 0.0f)),
-                new ColorVertex(Color.PureBlue, new Vertex(-0.5f, -0.75f, 0.0f)),
-                new ColorVertex(new Color(0x5005FF, 1.0f), new Vertex(-0.27f, -0.15f, 0.0f)),
-                new ColorVertex(new Color(0xCA05FF, 1.0f), new Vertex(-0.6f, 0.25f, 0.0f)),
-            };
+            //    // Triangle #4
+            //    6, 7, 8,
 
-            ElementStarShape = new int[]
-            {
-                // Triangle #1
-                0, 1, 2,
+            //    // Triangle #5
+            //    8, 9, 0,
 
-                // Triangle #2
-                2, 3, 4,
+            //    // Triangle #6
+            //    0, 2, 8,
 
-                // Triangle #3
-                4, 5, 6,
+            //    // Triangle #7
+            //    2, 4, 8,
 
-                // Triangle #4
-                6, 7, 8,
-
-                // Triangle #5
-                8, 9, 0,
-
-                // Triangle #6
-                0, 2, 8,
-
-                // Triangle #7
-                2, 4, 8,
-
-                // Triangle #8
-                8, 4, 6,
-            };
-
-            Triangles = new ColorVertex[]
-            {
-                // Triangle #1
-                new ColorVertex(new Color(1f, 0f, 0f, 1.0f), new Vertex(-0.5f, -0.5f, 0.0f)),
-                new ColorVertex(new Color(0f, 1f, 0f, 1.0f), new Vertex(-0.5f, 0.5f, 0.0f)),
-                new ColorVertex(new Color(0f, 0f, 1f, 1.0f), new Vertex(0.5f, 0.5f, 0.0f)),
-
-                // Triangle #2
-                new ColorVertex(new Color(0f, 0f, 1f, 1.0f), new Vertex(0.5f, 0.5f, 0.0f)),
-                new ColorVertex(new Color(1f, 1f, 0f, 1.0f), new Vertex(0.5f, -0.5f, 0.0f)),
-                new ColorVertex(new Color(1f, 0f, 0f, 1.0f), new Vertex(-0.5f, -0.5f, 0.0f))
-            };
-
-            Lines = new ColorVertex[]
-            {
-                // Line #1
-                new ColorVertex(new Color(0f, 0f, 0f, 1.0f), new Vertex(-0.5f, -0.5f, 0.0f)),
-                new ColorVertex(new Color(0f, 0f, 0f, 1.0f), new Vertex(-0.5f, 0.5f, 0.0f)),
-
-                // Line #2
-                new ColorVertex(new Color(0f, 0f, 0f, 1.0f), new Vertex(-0.5f, 0.5f, 0.0f)),
-                new ColorVertex(new Color(0f, 0f, 0f, 1.0f), new Vertex(0.5f, 0.5f, 0.0f)),
-
-                // Line #3
-                new ColorVertex(new Color(0f, 0f, 0f, 1.0f), new Vertex(0.5f, 0.5f, 0.0f)),
-                new ColorVertex(new Color(0f, 0f, 0f, 1.0f), new Vertex(-0.5f, -0.5f, 0.0f)),
-
-                // Line #4
-                new ColorVertex(new Color(0f, 0f, 0f, 1.0f), new Vertex(0.5f, 0.5f, 0.0f)),
-                new ColorVertex(new Color(0f, 0f, 0f, 1.0f), new Vertex(0.5f, -0.5f, 0.0f)),
-
-                // Line #5
-                new ColorVertex(new Color(0f, 0f, 0f, 1.0f), new Vertex(0.5f, -0.5f, 0.0f)),
-                new ColorVertex(new Color(0f, 0f, 0f, 1.0f), new Vertex(-0.5f, -0.5f, 0.0f)),                
-            };            
+            //    // Triangle #8
+            //    8, 4, 6,
+            //};            
 
             GraphicsDevice.OnFrame += async (gameTime) =>
             {
                 await Update(gameTime);
                 await Render();
             };
-        }
+        }        
 
-        OrthoMatrix = Matrix4.CreateOrthorgraphicProjection(0, GraphicsDevice.Height, 0, GraphicsDevice.Width, -100, 100);
+        OrthoMatrix = Matrix4.CreateOrthorgraphicProjection(GraphicsDevice.Width, GraphicsDevice.Height, 0.1f, 1000);
+        PerspectiveMatrix = Matrix4.CreatePerspectiveProjection(45, GraphicsDevice.Width, GraphicsDevice.Height, 0.1f, 1000);
+
+        CameraPosition = new Vector3(2, 2, 5);
+
+        Camera1 = Matrix4.LookAt(new Vector3(400, 300, 4), new Vector3(400, 300, 0), Vector3.Up);                
+        Camera2 = Matrix4.LookAt(CameraPosition, new Vector3(0, 0, 0), Vector3.Up);
+
+        // Set Projection
+        await GraphicsDevice.SetUniformMatrix4("MainShader", "uProjection", PerspectiveMatrix);
+
+        // Load objects
+        await GraphicsDevice.CreateShape<UVVertex>("Draw_Element_Cube", Element, ElementCubeShape, 3, 2);
+        await GraphicsDevice.CreateTexture(GrassTexture);
+
+        // Starting Orientation
+        // CubeTransformMatrix = CubeTransformMatrix.RotateY(90f);
 
         await base.OnAfterRenderAsync(firstRender);
     }
 
     private async Task Update(GameTime gameTime)
     {
-        await GraphicsDevice.SetUniformMatrix4("MainShader", "uProjection", OrthoMatrix);
-        //await GraphicsDevice.CreatePrimitives<ColorVertex>("Draw_Triangles", Triangles, 4, 3);
-        //await GraphicsDevice.CreatePrimitives<ColorVertex>("Draw_Lines", Lines, 4, 3);   
-        await GraphicsDevice.CreateShape<ColorVertex>("Draw_Element_Square", Element, ElementTrianglesShape, 4, 3);
-        // await GraphicsDevice.CreateShape<ColorVertex>("Draw_Element_Star", ElementStar, ElementStarShape, 4, 3);        
-        
+        CubeTransformMatrix = CubeTransformMatrix.RotateX(0.9f);
+        CubeTransformMatrix = CubeTransformMatrix.RotateY(-1.1f);
+        // CubeTransformMatrix = CubeTransformMatrix.RotateZ(0f);
 
-        // return Task.CompletedTask;
+        // await GraphicsDevice.CreatePrimitives<ColorVertex>("Draw_Triangles", Triangles, 4, 3);                
+        // await GraphicsDevice.CreatePrimitives<ColorVertex>("Draw_Lines", Lines, 4, 3);
+        // await GraphicsDevice.CreateShape<ColorVertex>("Draw_Element_Star", ElementStar, ElementStarShape, 4, 3);        
+
+        await Task.CompletedTask;
     }
 
     private async Task Render()
-    {
-        await GraphicsDevice.Clear(Color.CornFlowerBlue);
-        //await GraphicsDevice.DrawTriangles("Draw_Triangles", 0, Triangles.Count);
-        //await GraphicsDevice.DrawLines("Draw_Lines", 0, Lines.Count);
-        await GraphicsDevice.DrawShape("Draw_Element_Square", 0, ElementTrianglesShape.Count);
-        // await GraphicsDevice.DrawShape("Draw_Element_Star", 0, ElementStarShape.Count);        
+    {                
+        await GraphicsDevice.Clear(Color.CornFlowerBlue);                
+
+        //await GraphicsDevice.SetUniformMatrix4("MainShader", "uProjection", OrthoMatrix);
+        //await GraphicsDevice.SetUniformMatrix4("MainShader", "uView", Camera1);        
+        //await GraphicsDevice.DrawTriangles("Draw_Triangles", 0, Triangles.Count);   
+        // await GraphicsDevice.DrawLines("Draw_Lines", 0, Lines.Count);
+        // await GraphicsDevice.DrawShape("Draw_Element_Star", 0, ElementStarShape.Count);                
+        
+        await GraphicsDevice.SetUniformMatrix4("MainShader", "uView", Camera2);
+        await GraphicsDevice.SetUniformMatrix4("MainShader", "uModel", CubeTransformMatrix);     
+        await GraphicsDevice.DrawShape("Draw_Element_Cube", 0, ElementCubeShape.Count);
     }
 }

@@ -14,6 +14,7 @@ namespace FireballEngine.Core.Graphics
         public Task SetUniformMatrix4(string shaderAlias, string uniformAlias, Matrix4 matrix);
         public Task CreatePrimitives<T>(string alias, IEnumerable<T> data, params int[] sizes);
         public Task CreateShape<T>(string alias, IEnumerable<T> vertexData, IEnumerable<int> shapeData, params int[] sizes);
+        public Task CreateTexture(Texture2D texture);
         public Task DrawShape(string alias, int offset, int size);
         public Task DrawShapeOutline(string alias, int offset, int size);
         public Task DrawTriangles(string alias, int offset, int size);

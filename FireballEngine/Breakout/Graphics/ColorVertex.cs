@@ -14,4 +14,16 @@ namespace Breakout.Graphics
             Position = position.ToVector3();
         }
     }
+
+    public struct UVVertex
+    {        
+        public Vector3 Position { get; init; }
+        public Vector2 UV { get; init; }
+
+        public UVVertex(Vertex position, Vector2 uv)
+        {
+            UV = uv;
+            Position = position.ToVector3();
+        }
+    }
 }
