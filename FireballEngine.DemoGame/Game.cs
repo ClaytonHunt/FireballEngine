@@ -1,6 +1,6 @@
 using FireballEngine.Core;
 
-namespace FireballEngine.DemoBlazor.Components;
+namespace FireballEngine.DemoGame;
 
 public class Game: IGame
 {

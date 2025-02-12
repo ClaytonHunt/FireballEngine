@@ -17,4 +17,8 @@
     <PackageReference Include="FireballEngine.Blazor" Version="0.1.0-alpha" Condition="'$(Configuration)' != 'Debug'" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\FireballEngine.DemoGame\FireballEngine.DemoGame.csproj" />
+  </ItemGroup>
+
 </Project>
