@@ -1,0 +1,27 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <PackageId>FireballEngine.OpenGL</PackageId>
+    <Version>0.1.0-alpha</Version>
+    <Authors>Clayton Hunt</Authors>
+    <Description>OpenGL library for the Fireball Engine</Description>
+    <IsPackable>true</IsPackable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Conditional reference for local development -->
+    <ProjectReference Include="..\FireballEngine.Core\FireballEngine.Core.csproj" Condition="'$(Configuration)' == 'Debug'" />
+    <!-- Conditional reference for NuGet package -->
+    <PackageReference Include="FireballEngine.Core" Version="0.1.0-alpha" Condition="'$(Configuration)' != 'Debug'" />
+
+    <PackageReference Include="OpenTK" Version="4.*" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\LICENSE-EVALUATION.md" Pack="true" PackagePath="" />
+    <None Include="..\THIRD-PARTY-NOTICES.md" Pack="true" PackagePath="" />
+  </ItemGroup>
+</Project>

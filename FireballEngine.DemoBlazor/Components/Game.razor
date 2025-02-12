@@ -1,0 +1,25 @@
+@code {
+    [CascadingParameter] public IFireballContext? Context { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        if (Context != null)
+        {
+            Context.OnUpdate += HandleUpdate;
+            Context.OnRender += HandleRender;
+        }
+    }
+
+    private void HandleUpdate(float deltaMs)
+    {
+         // e.g., game logic here
+    }
+
+    private async void HandleRender()
+    {
+        if (Context != null)
+        {
+            await Context.Clear(Color.CornflowerBlue);
+        }
+    }
+}

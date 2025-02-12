@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="8.0.12" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="8.0.12" PrivateAssets="all" />
+
+    <!-- Conditional reference for local development -->
+    <ProjectReference Include="..\FireballEngine.Blazor\FireballEngine.Blazor.csproj" Condition="'$(Configuration)' == 'Debug'" />
+    <!-- Conditional reference for NuGet package -->
+    <PackageReference Include="FireballEngine.Blazor" Version="0.1.0-alpha" Condition="'$(Configuration)' != 'Debug'" />
+  </ItemGroup>
+
+</Project>

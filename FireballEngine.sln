@@ -1,0 +1,58 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FireballEngine.Core", "FireballEngine.Core\FireballEngine.Core.csproj", "{F1D8FF68-244C-4B14-8FE5-685579A9E043}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FireballEngine.Blazor", "FireballEngine.Blazor\FireballEngine.Blazor.csproj", "{7898FB1C-F1C7-41FB-A664-3EF4CB099CAB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FireballEngine.OpenGL", "FireballEngine.OpenGL\FireballEngine.OpenGL.csproj", "{EA243C3D-7EB6-4B9E-91CB-F1DC4592961E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FireballEngine.DemoOpenGL", "FireballEngine.DemoOpenGL\FireballEngine.DemoOpenGL.csproj", "{71EC8640-0D2A-4653-B8DD-4C81180B8C0A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FireballEngine.DemoBlazor", "FireballEngine.DemoBlazor\FireballEngine.DemoBlazor.csproj", "{3356908B-5417-4B11-9994-57F2DF48CC04}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F1D8FF68-244C-4B14-8FE5-685579A9E043}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F1D8FF68-244C-4B14-8FE5-685579A9E043}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F1D8FF68-244C-4B14-8FE5-685579A9E043}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F1D8FF68-244C-4B14-8FE5-685579A9E043}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7898FB1C-F1C7-41FB-A664-3EF4CB099CAB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7898FB1C-F1C7-41FB-A664-3EF4CB099CAB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7898FB1C-F1C7-41FB-A664-3EF4CB099CAB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7898FB1C-F1C7-41FB-A664-3EF4CB099CAB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EA243C3D-7EB6-4B9E-91CB-F1DC4592961E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EA243C3D-7EB6-4B9E-91CB-F1DC4592961E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EA243C3D-7EB6-4B9E-91CB-F1DC4592961E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EA243C3D-7EB6-4B9E-91CB-F1DC4592961E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F8610361-5506-4C97-941C-50D8AA758E57}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F8610361-5506-4C97-941C-50D8AA758E57}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F8610361-5506-4C97-941C-50D8AA758E57}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F8610361-5506-4C97-941C-50D8AA758E57}.Release|Any CPU.Build.0 = Release|Any CPU
+		{71EC8640-0D2A-4653-B8DD-4C81180B8C0A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{71EC8640-0D2A-4653-B8DD-4C81180B8C0A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{71EC8640-0D2A-4653-B8DD-4C81180B8C0A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{71EC8640-0D2A-4653-B8DD-4C81180B8C0A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EE437E81-48CE-4928-9CF4-C67210A7515D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EE437E81-48CE-4928-9CF4-C67210A7515D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EE437E81-48CE-4928-9CF4-C67210A7515D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EE437E81-48CE-4928-9CF4-C67210A7515D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DDE8F186-5D67-4B3E-A3D9-3D6DEAE1B558}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DDE8F186-5D67-4B3E-A3D9-3D6DEAE1B558}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DDE8F186-5D67-4B3E-A3D9-3D6DEAE1B558}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DDE8F186-5D67-4B3E-A3D9-3D6DEAE1B558}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3356908B-5417-4B11-9994-57F2DF48CC04}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3356908B-5417-4B11-9994-57F2DF48CC04}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3356908B-5417-4B11-9994-57F2DF48CC04}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3356908B-5417-4B11-9994-57F2DF48CC04}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,18 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Conditional reference for local development -->
+    <ProjectReference Include="..\FireballEngine.OpenGL\FireballEngine.OpenGL.csproj" Condition="'$(Configuration)' == 'Debug'" />
+    <!-- Conditional reference for NuGet package -->
+    <PackageReference Include="FireballEngine.OpenGL" Version="0.1.0-alpha" Condition="'$(Configuration)' != 'Debug'" />
+  </ItemGroup>
+
+</Project>
