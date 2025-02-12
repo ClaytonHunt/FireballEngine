@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <PackageId>FireballEngine.OpenGL</PackageId>
-    <Version>0.1.0-alpha</Version>
+    <Version>$(Version)</Version>
     <Authors>Clayton Hunt</Authors>
     <Description>OpenGL library for the Fireball Engine</Description>
     <IsPackable>true</IsPackable>
@@ -18,10 +18,5 @@
     <PackageReference Include="FireballEngine.Core" Version="0.1.0-alpha" Condition="'$(Configuration)' != 'Debug'" />
 
     <PackageReference Include="OpenTK" Version="4.*" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="..\LICENSE-EVALUATION.md" Pack="true" PackagePath="" />
-    <None Include="..\THIRD-PARTY-NOTICES.md" Pack="true" PackagePath="" />
   </ItemGroup>
 </Project>

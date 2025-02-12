@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <PackageId>FireballEngine.Blazor</PackageId>
-    <Version>0.1.0-alpha</Version>
+    <Version>$(Version)</Version>
     <Authors>Clayton Hunt</Authors>
     <Description>Blazor library for the Fireball Engine</Description>
     <IsPackable>true</IsPackable>
@@ -23,10 +23,5 @@
     <ProjectReference Include="..\FireballEngine.Core\FireballEngine.Core.csproj" Condition="'$(Configuration)' == 'Debug'" />
     <!-- Conditional reference for NuGet package -->
     <PackageReference Include="FireballEngine.Core" Version="0.1.0-alpha" Condition="'$(Configuration)' != 'Debug'" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="..\LICENSE-EVALUATION.md" Pack="true" PackagePath="" />
-    <None Include="..\THIRD-PARTY-NOTICES.md" Pack="true" PackagePath="" />
   </ItemGroup>
 </Project>

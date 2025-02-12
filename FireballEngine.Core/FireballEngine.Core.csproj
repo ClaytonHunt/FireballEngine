@@ -3,15 +3,11 @@
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <PackageId>FireballEngine.Core</PackageId>
-    <Version>0.1.0-alpha</Version>
+    <Version>$(Version)</Version>
     <Authors>Clayton Hunt</Authors>
     <Description>Core library for the Fireball Engine</Description>
     <IsPackable>true</IsPackable>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
-  <ItemGroup>
-    <None Include="../LICENSE-EVALUATION.md" Pack="true" PackagePath="" />
-    <None Include="../THIRD-PARTY-NOTICES.md" Pack="true" PackagePath="" />
-  </ItemGroup>
 </Project>

@@ -1,0 +1,12 @@
+<Project>
+  <PropertyGroup>
+    <!-- Ensure $(SolutionDir) is set, fallback to root if not set -->
+    <SolutionRoot Condition="'$(SolutionDir)' == ''">$(MSBuildThisFileDirectory)..\</SolutionRoot>
+    <SolutionRoot Condition="'$(SolutionDir)' != ''">$(SolutionDir)</SolutionRoot>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="$(SolutionRoot)LICENSE-EVALUATION.md" Pack="true" PackagePath="" />
+    <None Include="$(SolutionRoot)THIRD-PARTY-NOTICES.md" Pack="true" PackagePath="" />
+  </ItemGroup>
+</Project>
