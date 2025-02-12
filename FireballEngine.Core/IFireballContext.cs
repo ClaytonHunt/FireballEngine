@@ -1,6 +1,6 @@
 namespace FireballEngine.Core
 {
-    public interface IFireballContext 
+    public interface IFireballContext
     {
         /// <summary>
         /// The game instance that this context drives.
@@ -11,6 +11,16 @@ namespace FireballEngine.Core
         /// Asynchronously initializes with width, height, and title.
         /// </summary>
         Task InitializeAsync(int width, int height, string title);
+
+        /// <summary>
+        /// Factory method to create a platform-specific shader.
+        /// </summary>
+        Shader CreateShader(string vertexSource, string fragmentSource);
+
+        /// <summary>
+        /// Factory method to create a platform-specific renderer.
+        /// </summary>
+        Renderer CreateRenderer();
 
         /// <summary>
         /// Clears the screen with a color.

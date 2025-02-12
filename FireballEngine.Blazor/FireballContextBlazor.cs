@@ -31,6 +31,7 @@ namespace FireballEngine.Blazor
             string title)
         {
             await _jsModule.InvokeVoidAsync("init", dotNetRef, containerRef, width, height, title);
+            Game.OnLoad(this);
         }
 
         [JSInvokable]
@@ -40,6 +41,27 @@ namespace FireballEngine.Blazor
             _previousTimestamp = timestamp;
             Game.Update(deltaMs);
             Game.Render(this);
+        }
+
+        /// <summary>
+        /// Factory method to create a platform-specific shader.
+        /// </summary>
+        /// <param name="vertexSource"></param>
+        /// <param name="fragmentSource"></param>
+        /// <returns></returns>
+        /// <exception cref="NotImplementedException"></exception>
+        public Shader CreateShader(string vertexSource, string fragmentSource)
+        {
+            return new WebGLShader(_jsModule, vertexSource, fragmentSource);
+        }
+
+        /// <summary>
+        /// Factory method to create a platform-specific renderer.
+        /// </summary>
+
+        public Renderer CreateRenderer()
+        {
+            return new WebGLRenderer(_jsModule);
         }
 
         public async Task Clear(Color color)

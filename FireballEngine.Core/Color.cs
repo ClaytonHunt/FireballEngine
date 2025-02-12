@@ -17,6 +17,7 @@ public struct Color
     public static Color White => new Color(1.0f, 1.0f, 1.0f);
     public static Color Black => new Color(0.0f, 0.0f, 0.0f);
     public static Color CornflowerBlue => new Color(0.392f, 0.584f, 0.929f);
+    public static Color Red => new Color(1.0f, 0.0f, 0.0f);
 
     public override bool Equals([NotNullWhen(true)] object? obj)
     {
