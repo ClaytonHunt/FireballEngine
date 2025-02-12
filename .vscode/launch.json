@@ -1,0 +1,46 @@
+// .vscode/launch.json
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Launch Blazor Demo",
+            "type": "coreclr", // .NET Core debugging
+            "request": "launch",
+            "program": "dotnet",
+            "args": [
+                "run",
+                "--project",
+                "${workspaceFolder}/FireballEngine.DemoBlazor/FireballEngine.DemoBlazor.csproj"
+            ],
+            // Working directory set to the Blazor project folder
+            "cwd": "${workspaceFolder}/FireballEngine.DemoBlazor",
+            "console": "integratedTerminal",
+            "stopAtEntry": false,
+            "serverReadyAction": {
+                // This ensures VS Code waits for the app to start, 
+                // then automatically opens a browser.
+                "action": "openExternally",
+                // This pattern matches the console output from ASP.NET on startup.
+                "pattern": "^\\s*Now listening on:\\s+(https?://\\S+)",
+                "uriFormat": "%s"
+            },
+            "env": {
+                "ASPNETCORE_ENVIRONMENT": "Development"
+            }
+        },
+        {
+            "name": "Launch OpenGL Demo",
+            "type": "coreclr",
+            "request": "launch",
+            "program": "dotnet",
+            "args": [
+                "run",
+                "--project",
+                "${workspaceFolder}/FireballEngine.DemoOpenGL/FireballEngine.DemoOpenGL.csproj"
+            ],
+            "cwd": "${workspaceFolder}/FireballEngine.DemoOpenGL",
+            "console": "integratedTerminal",
+            "stopAtEntry": false
+        }
+    ]
+}

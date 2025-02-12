@@ -1,30 +1,20 @@
-namespace FireballEngine.Core;
-
-public delegate void UpdateHandler(float deltaTime);
-
-/// <summary>
-/// Main cross-platform context interface for the Fireball Engine.
-/// </summary>
-public interface IFireballContext
+namespace FireballEngine.Core
 {
-    /// <summary>
-    /// Fires each frame for game logic, with deltaTime in miliseconds.
-    /// </summary>
-    event UpdateHandler OnUpdate;
+    public interface IFireballContext 
+    {
+        /// <summary>
+        /// The game instance that this context drives.
+        /// </summary>
+        IGame Game { get; }
 
-    /// <summary>
-    /// Fires each frame for rendering.
-    /// </summary>
-    event Action OnRender;
+        /// <summary>
+        /// Asynchronously initializes with width, height, and title.
+        /// </summary>
+        Task InitializeAsync(int width, int height, string title);
 
-    /// <summary>
-    /// Asyncronously initializes with width, height, and title.
-    /// </summary>
-    Task InitializeAsync(int width, int height, string title);
-
-    /// <summary>
-    /// Clears the screen with a color.
-    /// </summary>
-    /// <param name="color">The color to clear the screen with.</param>
-    Task Clear(Color color);
+        /// <summary>
+        /// Clears the screen with a color.
+        /// </summary>
+        Task Clear(Color color);
+    }
 }

@@ -4,32 +4,41 @@
 @rendermode InteractiveWebAssembly
 
 <div @ref="_containerRef" style="width:@(Width)px; height:@(Height)px;">
-    <CascadingValue Value="@_context">
-        @ChildContent
-    </CascadingValue>
+    @ChildContent
 </div>
 
 @code {
     [Parameter] public int Width { get; set; }
     [Parameter] public int Height { get; set; }
     [Parameter] public string Title { get; set; } = "Fireball Engine - Game";
-    [Parameter] public RenderFragment? ChildContent { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }    
+    [Parameter] public IGame Game { get; set; } = default!;
 
+    private FireballContextBlazor _context = default!;
     private ElementReference _containerRef;
-    private IFireballContext? _context;
     private IJSObjectReference? _module;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            _module = await JSRuntime.InvokeAsync<IJSObjectReference>("import",
-            "./_content/FireballEngine.Blazor/fireballBlazor.js");
-            _context = new FireballContextBlazor(_module);
+            if (Game == null)
+            {
+                throw new InvalidOperationException("No game instance provided to FireballSurface.");
+            }
 
-            await ((FireballContextBlazor)_context).InitializeAsync(DotNetObjectReference.Create((FireballContextBlazor)_context), _containerRef, Width, Height, Title);
+            _module = await JSRuntime.InvokeAsync<IJSObjectReference>(
+                "import", "./_content/FireballEngine.Blazor/fireballBlazor.js");
 
-            StateHasChanged();
+            // Create the context, which now takes IGame (non-generic)
+            _context = new FireballContextBlazor(_module, Game);
+            await _context.InitializeAsync(
+                DotNetObjectReference.Create(_context),
+                _containerRef,
+                Width,
+                Height,
+                Title
+            );
         }
     }
 }

@@ -1,16 +1,8 @@
-﻿using FireballEngine.Core;
+﻿using FireballEngine.DemoOpenGL;
 using FireballEngine.OpenGL;
 
-IFireballContext context = new FireballContextOpenGL();
+var game = new Game();
 
-context.OnUpdate += (deltaTime) =>
-{
-    
-};
-
-context.OnRender += () =>
-{
-    context.Clear(Color.CornflowerBlue);
-};
+var context = new FireballContextOpenGL(game);
 
 await context.InitializeAsync(800, 600, "Fireball Engine Demo");

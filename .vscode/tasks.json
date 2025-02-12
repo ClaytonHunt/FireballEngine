@@ -1,0 +1,26 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "dotnet",
+			"task": "build",
+			"group": "build",
+			"problemMatcher": [],
+			"label": "dotnet: build"
+		},
+		{
+			"type": "dotnet",
+			"task": "watch FireballEngine.DemoOpenGL",
+			"file": "D:\\projects\\FireballEngine\\FireballEngine.DemoOpenGL\\FireballEngine.DemoOpenGL.csproj",
+			"problemMatcher": [],
+			"label": "dotnet: watch FireballEngine.DemoOpenGL"
+		},
+		{
+			"type": "dotnet",
+			"task": "watch FireballEngine.DemoBlazor",
+			"file": "D:\\projects\\FireballEngine\\FireballEngine.DemoBlazor\\FireballEngine.DemoBlazor.csproj",
+			"problemMatcher": [],
+			"label": "dotnet: watch FireballEngine.DemoBlazor"
+		}
+	]
+}
