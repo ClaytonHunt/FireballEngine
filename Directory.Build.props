@@ -1,7 +1,6 @@
 <Project>
     <PropertyGroup>
-        <WEEK>2</WEEK>
-        <Version>0.1.${WEEK}-alpha</Version>
+        <Version>0.1.2-alpha</Version>
         <Authors>Clayton Hunt</Authors>        
     </PropertyGroup>
 </Project>

@@ -19,7 +19,7 @@ public class WebGLShader : Shader
     {
         if (_isCompiled) return;
 
-        await _jsModule.InvokeAsync<int>("createShader", ProgramId, VertexSource, FragmentSource);
+        await _jsModule.InvokeVoidAsync("createShader", ProgramId, VertexSource, FragmentSource);
         _isCompiled = true;
     }
 
