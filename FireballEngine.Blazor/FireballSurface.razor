@@ -3,7 +3,7 @@
 @inject IJSRuntime JSRuntime
 @rendermode InteractiveWebAssembly
 
-<div @ref="_containerRef" style="width:@(Width)px; height:@(Height)px;">
+<div @ref="_containerRef" @onkeydown="OnKeyDown" @onkeyup="OnKeyUp" style="width:@(Width)px; height:@(Height)px;" tabindex="0">
     @ChildContent
 </div>
 
@@ -17,6 +17,7 @@
     private FireballContextBlazor _context = default!;
     private ElementReference _containerRef;
     private IJSObjectReference? _module;
+    private BlazorInput _input = new BlazorInput();
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -31,7 +32,7 @@
                 "import", "./_content/FireballEngine.Blazor/fireballBlazor.js");
 
             // Create the context, which now takes IGame (non-generic)
-            _context = new FireballContextBlazor(_module, Game);
+            _context = new FireballContextBlazor(_module, Game, _input);
             await _context.InitializeAsync(
                 DotNetObjectReference.Create(_context),
                 _containerRef,
@@ -40,5 +41,15 @@
                 Title
             );
         }
+    }
+
+    private void OnKeyDown(KeyboardEventArgs e)
+    {
+        _input.OnKeyDown(e);
+    }
+
+    private void OnKeyUp(KeyboardEventArgs e)
+    {
+        _input.OnKeyUp(e);
     }
 }

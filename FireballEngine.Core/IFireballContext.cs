@@ -8,6 +8,11 @@ namespace FireballEngine.Core
         IGame Game { get; }
 
         /// <summary>
+        /// The input system for this context.
+        /// </summary>
+        IInput Input { get; }
+
+        /// <summary>
         /// Asynchronously initializes with width, height, and title.
         /// </summary>
         Task InitializeAsync(int width, int height, string title);

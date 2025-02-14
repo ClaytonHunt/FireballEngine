@@ -55,6 +55,17 @@ namespace FireballEngine.Core.Math
             );
         }
 
+        /// <summary>Creates a scale matrix.</summary>
+        public static Matrix4 CreateScale(float scale)
+        {
+            return new Matrix4(
+                scale, 0, 0, 0,
+                0, scale, 0, 0,
+                0, 0, scale, 0,
+                0, 0, 0, 1
+            );
+        }
+
         /// <summary>Creates a rotation matrix around the Z-axis.</summary>
         public static Matrix4 CreateRotationZ(float angle)
         {
@@ -62,9 +73,9 @@ namespace FireballEngine.Core.Math
             float sin = MathF.Sin(angle);
             return new Matrix4(
                 cos, -sin, 0, 0,
-                sin, cos,  0, 0,
-                0,    0,   1, 0,
-                0,    0,   0, 1
+                sin, cos, 0, 0,
+                0, 0, 1, 0,
+                0, 0, 0, 1
             );
         }
 
@@ -72,23 +83,24 @@ namespace FireballEngine.Core.Math
         public static Matrix4 CreateTranslation(float x, float y, float z = 0)
         {
             return new Matrix4(
-                1, 0, 0, x,
-                0, 1, 0, y,
-                0, 0, 1, z,
-                0, 0, 0, 1
+                1, 0, 0, 0,
+                0, 1, 0, 0,
+                0, 0, 1, 0,
+                x, y, z, 1
             );
         }
 
         /// <summary>Converts the matrix to a float array for OpenGL/WebGL.</summary>
         public float[] ToArray()
         {
-            return new float[]
-            {
+            return [
                 M11, M12, M13, M14,
                 M21, M22, M23, M24,
                 M31, M32, M33, M34,
                 M41, M42, M43, M44
-            };
+            ];
         }
+
+        public static implicit operator float[](Matrix4 m) => m.ToArray();
     }
 }

@@ -12,10 +12,13 @@ namespace FireballEngine.Blazor
 
         public IGame Game { get; }
 
-        public FireballContextBlazor(IJSObjectReference jsModule, IGame game)
+        public IInput Input {get;}
+
+        public FireballContextBlazor(IJSObjectReference jsModule, IGame game, IInput input)
         {
             _jsModule = jsModule;
             Game = game;
+            Input = input;
         }
 
         public Task InitializeAsync(int width, int height, string title)

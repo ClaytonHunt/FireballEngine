@@ -6,11 +6,15 @@ namespace FireballEngine.DemoGame;
 public class Game: IGame
 {
     private Renderer? _renderer;
-    private Material[] _materials = new Material[5];
-    private float[] _rotations = new float[5];
+    private IInput? _input;
+    private Material? _material;
+    private float _rotation;
+    private float _scale = 1.0f;
+    private Vector2 _position = Vector2.Zero;
 
     public void OnLoad(IFireballContext context)
     {
+        _input = context.Input;
         _renderer = context.CreateRenderer();
         var shader = context.CreateShader(@"#version 300 es
             precision mediump float;
@@ -29,28 +33,37 @@ public class Game: IGame
          shader.Compile();
 
         // Create materials
-        _materials[0] = new Material(shader, new Color(1, 0, 0)); // Red
-        _materials[1] = new Material(shader, new Color(0, 1, 0)); // Green
-        _materials[2] = new Material(shader, new Color(0, 0, 1)); // Blue
-        _materials[3] = new Material(shader, new Color(1, 1, 0)); // Yellow
-        _materials[4] = new Material(shader, new Color(1, 0, 1)); // Magenta       
+        _material = new Material(shader, Color.Red);
     }
 
     public void Update(float deltaMs)
     {
-        for (int i = 0; i < _rotations.Length; i++)
-            _rotations[i] += deltaMs * 0.001f; // Rotate over time
+        float movementSpeed = 0.005f; // Adjust this value
+        float timeStep = MathF.Min(deltaMs, 16.67f); // Clamping to 60 FPS max step
+
+        // Movement
+        if (_input!.IsKeyDown(KeyCode.W)) _position.Y += movementSpeed * timeStep;
+        if (_input!.IsKeyDown(KeyCode.S)) _position.Y -= movementSpeed * timeStep;
+        if (_input!.IsKeyDown(KeyCode.A)) _position.X -= movementSpeed * timeStep;
+        if (_input!.IsKeyDown(KeyCode.D)) _position.X += movementSpeed * timeStep;
+
+        // Rotation
+        if(_input!.IsKeyDown(KeyCode.Right)) _rotation += 0.001f * timeStep;
+        if(_input!.IsKeyDown(KeyCode.Left)) _rotation -= 0.001f * timeStep;
+
+        // Scale
+        if(_input!.IsKeyDown(KeyCode.Up)) _scale += 0.001f * timeStep;
+        if(_input!.IsKeyDown(KeyCode.Down)) _scale -= 0.001f * timeStep;
     }
 
     public void Render(IFireballContext context)
     {
         context.Clear(Color.CornflowerBlue);
 
-        for (int i = 0; i < 5; i++)
-        {
-            float angle = _rotations[i];
-            var modelMatrix = Matrix4.CreateRotationZ(angle) * Matrix4.CreateTranslation(i * 0.3f - 0.6f, 0);
-            _renderer!.DrawTriangle(_materials[i], modelMatrix.ToArray());
-        }
+        var modelMatrix = Matrix4.CreateScale(_scale) *
+                  Matrix4.CreateRotationZ(_rotation) *
+                  Matrix4.CreateTranslation(_position.X, _position.Y);
+        
+        _renderer!.DrawTriangle(_material!, modelMatrix);
     }
 }
