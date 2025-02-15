@@ -1,4 +1,6 @@
 using FireballEngine.Core;
+using FireballEngine.Core.Assets;
+using FireballEngine.OpenGL.Assets;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 using OpenTK.Windowing.Common;
@@ -117,6 +119,11 @@ public class FireballContextOpenGL : IFireballContext
     public Renderer CreateRenderer()
     {
         return new OpenGLRenderer();
+    }
+
+    public IAssetManager CreateAssetManager()
+    {
+        return new OpenGLAssetManager();
     }
 
     /// <summary>

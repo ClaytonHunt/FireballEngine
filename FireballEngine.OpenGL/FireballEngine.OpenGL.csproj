@@ -13,6 +13,7 @@
 
   <ItemGroup>
     <!-- Conditional reference for local development -->
+    <PackageReference Include="SixLabors.ImageSharp" Version="3.1.6" />
     <ProjectReference Include="..\FireballEngine.Core\FireballEngine.Core.csproj" Condition="'$(Configuration)' == 'Debug'" />
     <!-- Conditional reference for NuGet package -->
     <PackageReference Include="FireballEngine.Core" Version="0.1.0-alpha" Condition="'$(Configuration)' != 'Debug'" />
