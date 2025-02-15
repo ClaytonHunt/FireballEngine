@@ -50,7 +50,18 @@ public class Game : IGame
         var modelMatrix = Matrix4.CreateScale(_scale) *
                           Matrix4.CreateRotationZ(_rotation) *
                           Matrix4.CreateTranslation(_position.X, _position.Y);
+        
+        float left = 0.0f, right = 800.0f;
+        float bottom = 0.0f, top = 600.0f;
+        float near = -1.0f, far = 1.0f;
 
-        _renderer!.DrawTriangle(_material!, modelMatrix);
+        float[] projectionMatrix = Matrix4.CreateOrthographicOffCenter(left, right, bottom, top, near, far);
+
+        _material!.Use();
+        _material!.Shader.SetMatrix("model", modelMatrix);                
+        _material!.Shader.SetMatrix("view", Matrix4.Identity);
+        _material!.Shader.SetMatrix("projection", projectionMatrix);
+
+        _renderer!.DrawTriangle();
     }
 }

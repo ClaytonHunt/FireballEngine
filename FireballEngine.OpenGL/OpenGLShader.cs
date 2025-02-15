@@ -103,7 +103,9 @@ public class OpenGLBasicColorShader : OpenGLShader
 
     private const string fragmentSource = @"#version 330 core
         out vec4 FragColor;
+        
         uniform vec4 uColor;        
+        
         void main() {
             FragColor = uColor;
         }";
@@ -116,18 +118,28 @@ public class OpenGLSpriteShader : OpenGLShader
     private const string vertexSource = @"#version 330 core
         layout (location = 0) in vec3 aPos;
         layout (location = 1) in vec2 aTexCoord;
+        
+        // Matrices
         uniform mat4 model;
+        uniform mat4 view;
         uniform mat4 projection;
+        
         out vec2 TexCoord;
+        
         void main() {
-            gl_Position = projection * model * vec4(aPos, 1.0);
+            vec4 worldPos = model * vec4(aPos, 1.0);
+            vec4 clipSpacePos = projection * view * worldPos;
+            gl_Position = clipSpacePos;
             TexCoord = aTexCoord;
         }";
 
     private const string fragmentSource = @"#version 330 core
         in vec2 TexCoord;
+
         out vec4 FragColor;
+        
         uniform sampler2D texture1;
+
         void main() {
             FragColor = texture(texture1, TexCoord);
         }";

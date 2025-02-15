@@ -45,7 +45,7 @@ public class WebGLBasicColorShader : WebGLShader
 
     private const string vertexSource = @"#version 300 es
         precision mediump float;
-        in vec3 aPos;
+        layout (location = 0) in vec3 aPos;
         
         // Matrices
         uniform mat4 model;
@@ -64,6 +64,7 @@ public class WebGLBasicColorShader : WebGLShader
         precision mediump float;
         out vec4 FragColor;
         uniform vec4 uColor;
+
         void main() {
             FragColor = uColor;
         }";
@@ -74,22 +75,32 @@ public class WebGLSpriteShader : WebGLShader
     public WebGLSpriteShader(IJSObjectReference jsModule) : base(jsModule, vertexSource, fragmentSource) { }
 
     private const string vertexSource = @"#version 300 es
-        precision mediump float;
+        precision mediump float;        
         layout (location = 0) in vec3 aPos;
         layout (location = 1) in vec2 aTexCoord;
+        
+        // Matrices
         uniform mat4 model;
+        uniform mat4 view;
         uniform mat4 projection;
+
         out vec2 TexCoord;
+        
         void main() {
-            gl_Position = projection * model * vec4(aPos, 1.0);
+            vec4 worldPos = model * vec4(aPos, 1.0);
+            vec4 clipSpacePos = projection * view * worldPos;
+            gl_Position = clipSpacePos;
             TexCoord = aTexCoord;
         }";
 
     private const string fragmentSource = @"#version 300 es
         precision mediump float;
         in vec2 TexCoord;
+        
         out vec4 FragColor;
+        
         uniform sampler2D uTexture;
+        
         void main() {
             FragColor = texture(uTexture, TexCoord);
         }";

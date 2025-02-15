@@ -10,6 +10,6 @@ namespace FireballEngine.Core
         /// <summary>
         /// Draws a simple triangle
         /// </summary>
-        public abstract void DrawTriangle(Material material, float[] modelMatrix);
+        public abstract void DrawTriangle();
     }
 }
