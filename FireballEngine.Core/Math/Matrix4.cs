@@ -90,6 +90,37 @@ namespace FireballEngine.Core.Math
             );
         }
 
+        public static Matrix4 CreateOrthographicOffCenter(float left, float right, float bottom, float top, float near, float far)
+        {
+            var matrix = new Matrix4();
+
+            float invRL = 1 / (right - left);
+            float invTB = 1 / (top - bottom);
+            float invFN = 1 / (far - near);
+
+            matrix.M11 = 2 * invRL;
+            matrix.M22 = 2 * invTB;
+            matrix.M33 = -2 * invFN;
+
+            matrix.M41 = -(right + left) * invRL;
+            matrix.M42 = -(top + bottom) * invTB;
+            matrix.M43 = -(far + near) * invFN;
+            matrix.M44 = 1;
+
+            return matrix;
+        }
+
+        /// <summary>Transposes the matrix.</summary>
+        public Matrix4 Transpose()
+        {
+            return new Matrix4(
+                M11, M21, M31, M41,
+                M12, M22, M32, M42,
+                M13, M23, M33, M43,
+                M14, M24, M34, M44
+            );
+        }
+
         /// <summary>Converts the matrix to a float array for OpenGL/WebGL.</summary>
         public float[] ToArray()
         {

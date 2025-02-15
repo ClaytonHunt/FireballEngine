@@ -1,3 +1,5 @@
+using FireballEngine.Core.Graphics;
+
 namespace FireballEngine.Core
 {
     /// <summary>

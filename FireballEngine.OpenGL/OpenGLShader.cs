@@ -1,10 +1,11 @@
 using FireballEngine.Core;
 using OpenTK.Graphics.OpenGL4;
+using GLShaderType = OpenTK.Graphics.OpenGL4.ShaderType;
 
 namespace FireballEngine.OpenGL;
 
 public class OpenGLShader : Shader
-{    
+{
     private bool _isCompiled => ProgramId != -1;
 
     public OpenGLShader(string vertexSource, string fragmentSource) : base(vertexSource, fragmentSource) { }
@@ -13,12 +14,12 @@ public class OpenGLShader : Shader
     {
         if (_isCompiled) return;
 
-        int vertexShader = GL.CreateShader(ShaderType.VertexShader);
+        int vertexShader = GL.CreateShader(GLShaderType.VertexShader);
         GL.ShaderSource(vertexShader, VertexSource);
         GL.CompileShader(vertexShader);
         CheckCompileErrors(vertexShader, "VERTEX");
 
-        int fragmentShader = GL.CreateShader(ShaderType.FragmentShader);
+        int fragmentShader = GL.CreateShader(GLShaderType.FragmentShader);
         GL.ShaderSource(fragmentShader, FragmentSource);
         GL.CompileShader(fragmentShader);
         CheckCompileErrors(fragmentShader, "FRAGMENT");
@@ -78,4 +79,56 @@ public class OpenGLShader : Shader
             throw new Exception($"Error linking program: {infoLog}");
         }
     }
+}
+
+public class OpenGLBasicColorShader : OpenGLShader
+{
+    public OpenGLBasicColorShader() : base(vertexSource, fragmentSource) { }
+
+    private const string vertexSource = @"#version 330 core
+        layout (location = 0) in vec3 aPos; // Vertex position
+
+        // Matrices
+        uniform mat4 model;
+        uniform mat4 view;
+        uniform mat4 projection;
+
+        void main()
+        {
+            // Apply transformations in the correct order: Model -> View -> Projection
+            vec4 worldPos = model * vec4(aPos, 1.0);
+            vec4 clipSpacePos = projection * view * worldPos;
+            gl_Position = clipSpacePos;
+        }";
+
+    private const string fragmentSource = @"#version 330 core
+        out vec4 FragColor;
+        uniform vec4 uColor;        
+        void main() {
+            FragColor = uColor;
+        }";
+}
+
+public class OpenGLSpriteShader : OpenGLShader
+{
+    public OpenGLSpriteShader() : base(vertexSource, fragmentSource) { }
+
+    private const string vertexSource = @"#version 330 core
+        layout (location = 0) in vec3 aPos;
+        layout (location = 1) in vec2 aTexCoord;
+        uniform mat4 model;
+        uniform mat4 projection;
+        out vec2 TexCoord;
+        void main() {
+            gl_Position = projection * model * vec4(aPos, 1.0);
+            TexCoord = aTexCoord;
+        }";
+
+    private const string fragmentSource = @"#version 330 core
+        in vec2 TexCoord;
+        out vec4 FragColor;
+        uniform sampler2D texture1;
+        void main() {
+            FragColor = texture(texture1, TexCoord);
+        }";
 }

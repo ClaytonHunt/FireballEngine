@@ -114,9 +114,9 @@ export function drawTriangle() {
   if (!_gl || !_currentShader) return;
 
   const vertices = new Float32Array([
-    0.0, 0.5, 0.0,  // Top
-    -0.5, -0.5, 0.0,  // Bottom Left
-    0.5, -0.5, 0.0   // Bottom Right
+    0.0,  66.7,  0.0,  // Top (450 - 383.3)
+    -50.0, -33.3,  0.0,  // Bottom Left (350 - 383.3)
+     50.0, -33.3,  0.0   // Bottom Right (450 - 383.3)
   ]);
 
   const vao = _gl.createVertexArray();

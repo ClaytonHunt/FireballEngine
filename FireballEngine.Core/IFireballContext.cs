@@ -20,7 +20,7 @@ namespace FireballEngine.Core
         /// <summary>
         /// Factory method to create a platform-specific shader.
         /// </summary>
-        Shader CreateShader(string vertexSource, string fragmentSource);
+        Shader CreateShader(ShaderType type);
 
         /// <summary>
         /// Factory method to create a platform-specific renderer.

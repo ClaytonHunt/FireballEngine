@@ -17,6 +17,6 @@ public class Material
     public void Use() 
     {
         Shader.Use();
-        Shader.SetColor(Color.R, Color.G, Color.B, Color.A);            
+        Shader.SetColor(Color.R, Color.G, Color.B, Color.A);
     }
 }

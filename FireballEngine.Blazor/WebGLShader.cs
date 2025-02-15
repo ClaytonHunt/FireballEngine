@@ -8,7 +8,7 @@ public class WebGLShader : Shader
     private readonly IJSObjectReference _jsModule;    
     private bool _isCompiled = false;
 
-    public WebGLShader(IJSObjectReference jsModule, string vertexSource, string fragmentSource)
+    protected WebGLShader(IJSObjectReference jsModule, string vertexSource, string fragmentSource)
         : base(vertexSource, fragmentSource)
     {
         _jsModule = jsModule;
@@ -37,4 +37,60 @@ public class WebGLShader : Shader
     {
         await _jsModule.InvokeVoidAsync("setMatrix", ProgramId, uniformName, matrix);
     }
+}
+
+public class WebGLBasicColorShader : WebGLShader
+{
+    public WebGLBasicColorShader(IJSObjectReference jsModule) : base(jsModule, vertexSource, fragmentSource) { }
+
+    private const string vertexSource = @"#version 300 es
+        precision mediump float;
+        in vec3 aPos;
+        
+        // Matrices
+        uniform mat4 model;
+        uniform mat4 view;
+        uniform mat4 projection;
+
+        void main()
+        {
+            // Apply transformations in the correct order: Model -> View -> Projection
+            vec4 worldPos = model * vec4(aPos, 1.0);
+            vec4 clipSpacePos = projection * view * worldPos;
+            gl_Position = clipSpacePos;
+        }";
+
+    private const string fragmentSource = @"#version 300 es
+        precision mediump float;
+        out vec4 FragColor;
+        uniform vec4 uColor;
+        void main() {
+            FragColor = uColor;
+        }";
+}
+
+public class WebGLSpriteShader : WebGLShader
+{
+    public WebGLSpriteShader(IJSObjectReference jsModule) : base(jsModule, vertexSource, fragmentSource) { }
+
+    private const string vertexSource = @"#version 300 es
+        precision mediump float;
+        layout (location = 0) in vec3 aPos;
+        layout (location = 1) in vec2 aTexCoord;
+        uniform mat4 model;
+        uniform mat4 projection;
+        out vec2 TexCoord;
+        void main() {
+            gl_Position = projection * model * vec4(aPos, 1.0);
+            TexCoord = aTexCoord;
+        }";
+
+    private const string fragmentSource = @"#version 300 es
+        precision mediump float;
+        in vec2 TexCoord;
+        out vec4 FragColor;
+        uniform sampler2D uTexture;
+        void main() {
+            FragColor = texture(uTexture, TexCoord);
+        }";
 }

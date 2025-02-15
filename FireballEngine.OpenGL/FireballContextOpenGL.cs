@@ -3,6 +3,7 @@ using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
+using ShaderType = FireballEngine.Core.ShaderType;
 
 namespace FireballEngine.OpenGL;
 
@@ -96,9 +97,17 @@ public class FireballContextOpenGL : IFireballContext
     /// <param name="vertexSource"></param>
     /// <param name="fragmentSource"></param>
     /// <returns></returns>
-    public Shader CreateShader(string vertexSource, string fragmentSource)
+    public Shader CreateShader(ShaderType type)
     {
-        return new OpenGLShader(vertexSource, fragmentSource);
+        switch(type)
+        {
+            case ShaderType.BasicColor:
+                return new OpenGLBasicColorShader();
+            case ShaderType.Sprite:
+                return new OpenGLSpriteShader();
+            default:
+                throw new ArgumentException("Invalid shader type.");
+        }
     }
 
 

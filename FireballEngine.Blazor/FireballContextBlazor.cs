@@ -53,9 +53,17 @@ namespace FireballEngine.Blazor
         /// <param name="fragmentSource"></param>
         /// <returns></returns>
         /// <exception cref="NotImplementedException"></exception>
-        public Shader CreateShader(string vertexSource, string fragmentSource)
+        public Shader CreateShader(ShaderType type)
         {
-            return new WebGLShader(_jsModule, vertexSource, fragmentSource);
+            switch(type)
+            {
+                case ShaderType.BasicColor:
+                    return new WebGLBasicColorShader(_jsModule);
+                case ShaderType.Sprite:
+                    return new WebGLSpriteShader(_jsModule);
+                default:
+                    throw new NotImplementedException("Unknown shader type.");
+            }           
         }
 
         /// <summary>
