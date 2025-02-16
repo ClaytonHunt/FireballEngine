@@ -19,6 +19,22 @@
 
   <ItemGroup>
     <ProjectReference Include="..\FireballEngine.DemoGame\FireballEngine.DemoGame.csproj" />
-  </ItemGroup>
+  </ItemGroup>  
 
+  <Target Name="SyncGameAssets" AfterTargets="Build">
+    <!-- Delete existing assets folder to prevent stale files -->
+    <RemoveDir Directories="$(ProjectDir)wwwroot\assets\" Condition="Exists('$(ProjectDir)wwwroot\assets\')" />
+
+    <!-- Recreate the folder to avoid errors -->
+    <MakeDir Directories="$(ProjectDir)wwwroot\assets\" />
+
+    <!-- Collect all assets from DemoGame -->
+    <ItemGroup>
+        <GameAssets Include="..\FireballEngine.DemoGame\assets\**\*" />
+    </ItemGroup>
+
+    <!-- Copy assets while preserving the directory structure -->
+    <Copy SourceFiles="@(GameAssets)"
+          DestinationFolder="$(ProjectDir)wwwroot\assets\%(RecursiveDir)" />
+  </Target>
 </Project>

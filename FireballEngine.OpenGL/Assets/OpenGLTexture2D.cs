@@ -43,16 +43,15 @@ public class OpenGLTexture2D : Texture2D, IOpenGLAsset<Texture2D>
     }
 
     private static int LoadTextureFromFile(string path)
-    {        
-        FireballMessage.Info($"Loading texture from file: {path}");
-
+    {                
         if (!File.Exists(path))
         {
-            FireballMessage.Error($"Texture file not found: {path}");
+            Fire.Error($"Texture file not found: {path}");
             throw new FileNotFoundException($"Texture file not found: {path}");
-        }                
+        }                        
 
-        int textureId = GL.GenTexture();
+        int textureId = GL.GenTexture();        
+
         GL.BindTexture(TextureTarget.Texture2D, textureId);        
 
         using (var image = Image.Load<Rgba32>(path))
@@ -70,9 +69,7 @@ public class OpenGLTexture2D : Texture2D, IOpenGLAsset<Texture2D>
 
         GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
         GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
-        GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
-
-        FireballMessage.Info($"Loaded texture from file: {path}");
+        GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);        
 
         return textureId;
     }

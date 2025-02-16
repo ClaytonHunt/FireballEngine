@@ -1,3 +1,5 @@
+using FireballEngine.Core.Assets;
+
 namespace FireballEngine.Core
 {
     public interface IFireballContext
@@ -11,6 +13,11 @@ namespace FireballEngine.Core
         /// The input system for this context.
         /// </summary>
         IInput Input { get; }
+
+        /// <summary>
+        /// Factory method to create a platform-specific asset manager.
+        /// </summary>
+        IAssetManager AssetManager { get; }
 
         /// <summary>
         /// Asynchronously initializes with width, height, and title.

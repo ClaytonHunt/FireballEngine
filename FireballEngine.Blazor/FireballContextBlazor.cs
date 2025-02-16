@@ -1,4 +1,8 @@
+using FireballEngine.Blazor.Assets;
+using FireballEngine.Blazor.Utilities;
 using FireballEngine.Core;
+using FireballEngine.Core.Assets;
+using FireballEngine.Core.Utilities;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 
@@ -6,19 +10,22 @@ namespace FireballEngine.Blazor
 {
     public class FireballContextBlazor : IFireballContext
     {
-        private readonly IJSObjectReference _jsModule;
+        private IJSObjectReference _jsModule;
         private double _previousTimestamp;
         private Color? _lastClearColor;
 
         public IGame Game { get; }
 
-        public IInput Input {get;}
+        public IInput Input { get; }
+
+        public IAssetManager AssetManager { get; }
 
         public FireballContextBlazor(IJSObjectReference jsModule, IGame game, IInput input)
-        {
+        {            
             _jsModule = jsModule;
             Game = game;
             Input = input;
+            AssetManager = new WebGLAssetManager(_jsModule);            
         }
 
         public Task InitializeAsync(int width, int height, string title)
@@ -33,8 +40,9 @@ namespace FireballEngine.Blazor
             int height,
             string title)
         {
-            await _jsModule.InvokeVoidAsync("init", dotNetRef, containerRef, width, height, title);
-            Game.OnLoad(this);
+            await _jsModule.InvokeVoidAsync("init", dotNetRef, containerRef, width, height, title);            
+            await Game.OnLoad(this);
+            await _jsModule.InvokeVoidAsync("start");
         }
 
         [JSInvokable]
@@ -46,6 +54,26 @@ namespace FireballEngine.Blazor
             Game.Render(this);
         }
 
+        [JSInvokable]
+        public void LogMessage(string level, string message)
+        {
+            switch (level.ToLower())
+            {
+                case "info":
+                    Fire.Info(message);
+                    break;
+                case "warn":
+                    Fire.Warning(message);
+                    break;
+                case "error":
+                    Fire.Error(message);
+                    break;
+                default:
+                    Fire.Info(message);
+                    break;
+            }
+        }
+
         /// <summary>
         /// Factory method to create a platform-specific shader.
         /// </summary>
@@ -55,7 +83,7 @@ namespace FireballEngine.Blazor
         /// <exception cref="NotImplementedException"></exception>
         public Shader CreateShader(ShaderType type)
         {
-            switch(type)
+            switch (type)
             {
                 case ShaderType.BasicColor:
                     return new WebGLBasicColorShader(_jsModule);
@@ -63,7 +91,7 @@ namespace FireballEngine.Blazor
                     return new WebGLSpriteShader(_jsModule);
                 default:
                     throw new NotImplementedException("Unknown shader type.");
-            }           
+            }
         }
 
         /// <summary>

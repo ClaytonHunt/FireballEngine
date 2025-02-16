@@ -2,7 +2,7 @@ namespace FireballEngine.Core;
 
 public interface IGame
 {
-    void OnLoad(IFireballContext context);
-    void Update(float deltaMs);
-    void Render(IFireballContext context);
+    Task OnLoad(IFireballContext context);
+    Task Update(float deltaMs);
+    Task Render(IFireballContext context);
 }

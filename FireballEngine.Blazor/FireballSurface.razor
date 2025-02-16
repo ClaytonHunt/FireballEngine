@@ -1,17 +1,22 @@
+@using FireballEngine.Blazor.Utilities
 @using FireballEngine.Core
+@using FireballEngine.Core.Utilities
 @using Microsoft.JSInterop
 @inject IJSRuntime JSRuntime
 @rendermode InteractiveWebAssembly
 
-<div @ref="_containerRef" @onkeydown="OnKeyDown" @onkeyup="OnKeyUp" style="width:@(Width)px; height:@(Height)px;" tabindex="0">
-    @ChildContent
+<div @ref="_containerRef" @onkeydown="OnKeyDown" @onkeyup="OnKeyUp" style="width:@(Width)px; height:@(Height)px;"
+    tabindex="0">
+    <CascadingValue Value="_context">
+        @ChildContent
+    </CascadingValue>
 </div>
 
 @code {
     [Parameter] public int Width { get; set; }
     [Parameter] public int Height { get; set; }
     [Parameter] public string Title { get; set; } = "Fireball Engine - Game";
-    [Parameter] public RenderFragment? ChildContent { get; set; }    
+    [Parameter] public RenderFragment? ChildContent { get; set; }
     [Parameter] public IGame Game { get; set; } = default!;
 
     private FireballContextBlazor _context = default!;
@@ -26,13 +31,16 @@
             if (Game == null)
             {
                 throw new InvalidOperationException("No game instance provided to FireballSurface.");
-            }
+            }            
 
-            _module = await JSRuntime.InvokeAsync<IJSObjectReference>(
-                "import", "./_content/FireballEngine.Blazor/fireballBlazor.js");
+            Console.SetOut(new BlazorConsoleWriter(JSRuntime, MessageLevel.Info));            
+            Console.SetError(new BlazorConsoleWriter(JSRuntime, MessageLevel.Error));
+            Fire.SetFormatter(new BrowserConsoleLogFormatter());
 
-            // Create the context, which now takes IGame (non-generic)
+            _module = await JSRuntime.InvokeAsync<IJSObjectReference>("import", "./_content/FireballEngine.Blazor/fireballBlazor.js");
+
             _context = new FireballContextBlazor(_module, Game, _input);
+
             await _context.InitializeAsync(
                 DotNetObjectReference.Create(_context),
                 _containerRef,
@@ -40,6 +48,8 @@
                 Height,
                 Title
             );
+
+            StateHasChanged();
         }
     }
 
@@ -51,5 +61,5 @@
     private void OnKeyUp(KeyboardEventArgs e)
     {
         _input.OnKeyUp(e);
-    }
+    }    
 }

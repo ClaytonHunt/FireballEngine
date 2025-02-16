@@ -1,5 +1,7 @@
 using FireballEngine.Core;
 using FireballEngine.Core.Math;
+using FireballEngine.Core.Assets;
+using FireballEngine.Core.Utilities;
 
 namespace FireballEngine.DemoGame;
 
@@ -7,23 +9,33 @@ public class Game : IGame
 {
     private Renderer? _renderer;
     private IInput? _input;
+    private IAssetManager? _assetManager;
     private Material? _material;
     private float _rotation;
     private float _scale = 1.0f;
     private Vector2 _position = new Vector2(400, 300);
+    private Texture2D? _playerTexture;
 
-    public void OnLoad(IFireballContext context)
+    public async Task OnLoad(IFireballContext context)
     {
         _input = context.Input;
         _renderer = context.CreateRenderer();
-        var shader = context.CreateShader(ShaderType.BasicColor);
+        _assetManager = context.AssetManager;
 
+        var shader = context.CreateShader(ShaderType.Sprite);
         shader.Compile();
         _material = new Material(shader, Color.Red);
+
+        await LoadAssets();
+    }
+
+    private async Task LoadAssets()
+    {
+        _playerTexture = await _assetManager!.Load<Texture2D>("/player/idle", "assets/sprites/ship_idle.png");
     }
 
 
-    public void Update(float deltaMs)
+    public async Task Update(float deltaMs)
     {
         float movementSpeed = 0.5f; // Adjust this value
         float timeStep = MathF.Min(deltaMs, 16.67f); // Clamping to 60 FPS max step
@@ -41,11 +53,15 @@ public class Game : IGame
         // Scale
         if (_input!.IsKeyDown(KeyCode.Up)) _scale += 0.001f * timeStep;
         if (_input!.IsKeyDown(KeyCode.Down)) _scale -= 0.001f * timeStep;
+
+        await Task.CompletedTask;
     }
 
-    public void Render(IFireballContext context)
+    public async Task Render(IFireballContext context)
     {
-        context.Clear(Color.CornflowerBlue);
+        await context.Clear(Color.CornflowerBlue);       
+
+        // if(_playerTexture == null || _material == null || _renderer == null) return;
 
         var modelMatrix = Matrix4.CreateScale(_scale) *
                           Matrix4.CreateRotationZ(_rotation) *
@@ -60,8 +76,10 @@ public class Game : IGame
         _material!.Use();
         _material!.Shader.SetMatrix("model", modelMatrix);                
         _material!.Shader.SetMatrix("view", Matrix4.Identity);
-        _material!.Shader.SetMatrix("projection", projectionMatrix);
+        _material!.Shader.SetMatrix("projection", projectionMatrix);        
 
-        _renderer!.DrawTriangle();
+        _renderer!.DrawSprite(_playerTexture!, _material!, 0, 0, 32, 50);
+
+        await Task.CompletedTask;
     }
 }

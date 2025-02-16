@@ -138,9 +138,9 @@ public class OpenGLSpriteShader : OpenGLShader
 
         out vec4 FragColor;
         
-        uniform sampler2D texture1;
+        uniform sampler2D uTexture;
 
         void main() {
-            FragColor = texture(texture1, TexCoord);
+            FragColor = texture(uTexture, TexCoord);
         }";
 }

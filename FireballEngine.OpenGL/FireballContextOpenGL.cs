@@ -1,6 +1,8 @@
 using FireballEngine.Core;
 using FireballEngine.Core.Assets;
+using FireballEngine.Core.Utilities;
 using FireballEngine.OpenGL.Assets;
+using FireballEngine.OpenGL.Utilities;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 using OpenTK.Windowing.Common;
@@ -15,11 +17,15 @@ public class FireballContextOpenGL : IFireballContext
     private Color? _lastClearColor;
     public IGame Game { get; }
     public IInput Input { get;}
+    public IAssetManager AssetManager { get; }
 
     public FireballContextOpenGL(IGame game)
     {
+        Fire.SetFormatter(new TerminalLogFormatter());
+
         Game = game;
         Input = new OpenGLInput();
+        AssetManager = new OpenGLAssetManager();        
     }
 
     public async Task InitializeAsync(int width, int height, string title)
@@ -48,9 +54,9 @@ public class FireballContextOpenGL : IFireballContext
     /// <summary>
     /// Called when the OpenGL windows is ready. Triggers the OnLoad event for the user to set up shaders and renderers.
     /// </summary>
-    private void HandleOnLoad()
+    private async void HandleOnLoad()
     {
-        Game.OnLoad(this);
+        await Game.OnLoad(this);
     }
 
     /// <summary>
@@ -75,20 +81,20 @@ public class FireballContextOpenGL : IFireballContext
     /// </summary>
     /// <param name="args"></param>
 
-    private void OnUpdateFrame(FrameEventArgs args)
+    private async void OnUpdateFrame(FrameEventArgs args)
     {
         float deltaMs = (float)(args.Time * 1000.0f);
-        Game.Update(deltaMs);
+        await Game.Update(deltaMs);
     }
 
     /// <summary>
     /// This method is called every frame. It is responsible for rendering the game.
     /// </summary>
-    private void OnRenderFrame(FrameEventArgs args)
+    private async void OnRenderFrame(FrameEventArgs args)
     {
         // The game is responsible for telling the context what to do 
         // (e.g., clearing the screen). We call Game.Render(this).
-        Game.Render(this);
+        await Game.Render(this);
 
         _window?.SwapBuffers();
     }
@@ -119,12 +125,7 @@ public class FireballContextOpenGL : IFireballContext
     public Renderer CreateRenderer()
     {
         return new OpenGLRenderer();
-    }
-
-    public IAssetManager CreateAssetManager()
-    {
-        return new OpenGLAssetManager();
-    }
+    }    
 
     /// <summary>
     /// Clears the screen with the specified color.
