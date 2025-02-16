@@ -7,79 +7,158 @@ namespace FireballEngine.DemoGame;
 
 public class Game : IGame
 {
-    private Renderer? _renderer;
+    private Scene? _scene;
     private IInput? _input;
     private IAssetManager? _assetManager;
-    private Material? _material;
-    private float _rotation;
-    private float _scale = 1.0f;
-    private Vector2 _position = new Vector2(400, 300);
-    private Texture2D? _playerTexture;
+    private Renderer? _renderer;    
 
     public async Task OnLoad(IFireballContext context)
     {
-        _input = context.Input;
-        _renderer = context.CreateRenderer();
+        _input = context.Input;        
         _assetManager = context.AssetManager;
+        _renderer = context.Renderer;
+        _scene = new Scene();
 
-        var shader = context.CreateShader(ShaderType.Sprite);
+        // Add Camera
+        var camera = new Camera(ProjectionType.Orthographic, 800, 600);
+        _scene.AddCamera(CameraLayer.Game, camera);
+
+        // Add Player
+        var player = new Player(context, _input, _assetManager);
+        _scene.AddEntity(player);        
+
+        // Add Asteroid
+        var asteroid = new Asteroid(context, _input, _assetManager);
+        _scene.AddEntity(asteroid);
+
+        await _scene.LoadAsync();
+    }
+
+    public void Update(float deltaMs)
+    {
+        _scene!.Update(deltaMs);
+    }
+
+    public void Render()
+    {
+        _renderer!.Clear(Color.CornflowerBlue);
+        _scene!.Render(_renderer!);
+    }
+}
+
+public class Player : Entity
+{
+    private IFireballContext _context;
+    private IInput _input;
+    private IAssetManager _assetManager;
+    private SpriteRenderableComponent _renderable;
+    private float _speed = .5f;
+
+    public Player(IFireballContext context, IInput input, IAssetManager assetManager)
+    {
+        _context = context;
+        _input = input;        
+        _assetManager = assetManager;
+        CameraLayer = CameraLayer.Game;
+    }
+
+    public override async Task LoadAsync()
+    {
+        // Load assets
+        var shader = _context.CreateShader(ShaderType.Sprite);
         shader.Compile();
-        _material = new Material(shader, Color.Red);
 
-        await LoadAssets();
+        var material = new Material(shader, Color.White);
+        var texture = await _assetManager.Load<Texture2D>("/player/idle", "assets/sprites/ship_idle.png");
+
+        float spriteWidth = 32;
+        float spriteHeight = 50;
+
+        Transform.Position = new Vector3(400, 300, 0);
+
+        _renderable = new SpriteRenderableComponent(new Material(shader, Color.White), texture, spriteWidth, spriteHeight);
     }
 
-    private async Task LoadAssets()
+    public override void Update(float deltaMs)
     {
-        _playerTexture = await _assetManager!.Load<Texture2D>("/player/idle", "assets/sprites/ship_idle.png");
-    }
-
-
-    public async Task Update(float deltaMs)
-    {
-        float movementSpeed = 0.5f; // Adjust this value
         float timeStep = MathF.Min(deltaMs, 16.67f); // Clamping to 60 FPS max step
 
         // Movement
-        if (_input!.IsKeyDown(KeyCode.W)) _position.Y += movementSpeed * timeStep;
-        if (_input!.IsKeyDown(KeyCode.S)) _position.Y -= movementSpeed * timeStep;
-        if (_input!.IsKeyDown(KeyCode.A)) _position.X -= movementSpeed * timeStep;
-        if (_input!.IsKeyDown(KeyCode.D)) _position.X += movementSpeed * timeStep;
+        if (_input.IsKeyDown(KeyCode.W)) Transform.Position += new Vector3(0, _speed * timeStep, 0);
+        if (_input.IsKeyDown(KeyCode.S)) Transform.Position += new Vector3(0, -_speed * timeStep, 0);
+        if (_input.IsKeyDown(KeyCode.D)) Transform.Position += new Vector3(_speed * timeStep, 0, 0);
+        if (_input.IsKeyDown(KeyCode.A)) Transform.Position += new Vector3(-_speed * timeStep, 0, 0);        
 
         // Rotation
-        if (_input!.IsKeyDown(KeyCode.Right)) _rotation += 0.001f * timeStep;
-        if (_input!.IsKeyDown(KeyCode.Left)) _rotation -= 0.001f * timeStep;
+        if (_input.IsKeyDown(KeyCode.Left)) Transform.Rotation += new Vector3(0, 0, 0.1f * timeStep / 100);
+        if (_input.IsKeyDown(KeyCode.Right)) Transform.Rotation -= new Vector3(0, 0, 0.1f * timeStep / 100);
 
         // Scale
-        if (_input!.IsKeyDown(KeyCode.Up)) _scale += 0.001f * timeStep;
-        if (_input!.IsKeyDown(KeyCode.Down)) _scale -= 0.001f * timeStep;
-
-        await Task.CompletedTask;
+        if (_input.IsKeyDown(KeyCode.Up)) Transform.Scale += new Vector3(0.001f * timeStep, 0.001f * timeStep, 0);
+        if (_input.IsKeyDown(KeyCode.Down)) Transform.Scale -= new Vector3(0.001f * timeStep, 0.001f * timeStep, 0);
     }
 
-    public async Task Render(IFireballContext context)
+    public override void Render(Renderer renderer, Camera camera)
     {
-        await context.Clear(Color.CornflowerBlue);       
+        _renderable!.Render(renderer, camera, Transform);
+    }
+}
 
-        // if(_playerTexture == null || _material == null || _renderer == null) return;
+public class Asteroid : Entity
+{
+    private IFireballContext _context;
+    private IInput _input;
+    private IAssetManager _assetManager;
+    private SpriteRenderableComponent _renderable;
+    // private float _speed = .5f;
 
-        var modelMatrix = Matrix4.CreateScale(_scale) *
-                          Matrix4.CreateRotationZ(_rotation) *
-                          Matrix4.CreateTranslation(_position.X, _position.Y);
-        
-        float left = 0.0f, right = 800.0f;
-        float bottom = 0.0f, top = 600.0f;
-        float near = -1.0f, far = 1.0f;
+    public Asteroid(IFireballContext context, IInput input, IAssetManager assetManager)
+    {
+        _context = context;
+        _input = input;        
+        _assetManager = assetManager;
+        CameraLayer = CameraLayer.Game;
+    }
 
-        float[] projectionMatrix = Matrix4.CreateOrthographicOffCenter(left, right, bottom, top, near, far);
+    public override async Task LoadAsync()
+    {
+        // Load assets
+        var shader = _context.CreateShader(ShaderType.Sprite);
+        shader.Compile();
 
-        _material!.Use();
-        _material!.Shader.SetMatrix("model", modelMatrix);                
-        _material!.Shader.SetMatrix("view", Matrix4.Identity);
-        _material!.Shader.SetMatrix("projection", projectionMatrix);        
+        var material = new Material(shader, Color.White);
+        var texture = await _assetManager.Load<Texture2D>("/asteroid/idle", "assets/sprites/asteroid_large.png");
 
-        _renderer!.DrawSprite(_playerTexture!, _material!, 0, 0, 32, 50);
+        float spriteWidth = 128;
+        float spriteHeight = 124;
 
-        await Task.CompletedTask;
+        Transform.Position = new Vector3(400, 300, 0);
+
+        _renderable = new SpriteRenderableComponent(new Material(shader, Color.White), texture, spriteWidth, spriteHeight);
+    }
+
+    public override void Update(float deltaMs)
+    {
+        float timeStep = MathF.Min(deltaMs, 16.67f); // Clamping to 60 FPS max step
+
+        // // Movement
+        // if (_input.IsKeyDown(KeyCode.W)) Transform.Position += new Vector3(0, _speed * timeStep, 0);
+        // if (_input.IsKeyDown(KeyCode.S)) Transform.Position += new Vector3(0, -_speed * timeStep, 0);
+        // if (_input.IsKeyDown(KeyCode.D)) Transform.Position += new Vector3(_speed * timeStep, 0, 0);
+        // if (_input.IsKeyDown(KeyCode.A)) Transform.Position += new Vector3(-_speed * timeStep, 0, 0);        
+
+        // // Rotation
+        // if (_input.IsKeyDown(KeyCode.Left)) Transform.Rotation += new Vector3(0, 0, 0.1f * timeStep / 100);
+        Transform.Rotation += new Vector3(0, 0, 0.1f * timeStep / 100);
+        // if (_input.IsKeyDown(KeyCode.Right)) Transform.Rotation -= new Vector3(0, 0, 0.1f * timeStep / 100);
+
+        // // Scale
+        // if (_input.IsKeyDown(KeyCode.Up)) Transform.Scale += new Vector3(0.001f * timeStep, 0.001f * timeStep, 0);
+        // if (_input.IsKeyDown(KeyCode.Down)) Transform.Scale -= new Vector3(0.001f * timeStep, 0.001f * timeStep, 0);
+    }
+
+    public override void Render(Renderer renderer, Camera camera)
+    {
+        _renderable!.Render(renderer, camera, Transform);
     }
 }

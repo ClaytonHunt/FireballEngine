@@ -8,6 +8,11 @@ namespace FireballEngine.Core;
 public abstract class Renderer
 {
     /// <summary>
+    /// Clears the screen with a color.
+    /// </summary>
+    public abstract void Clear(Color color);
+
+    /// <summary>
     /// Draws a simple triangle
     /// </summary>
     public abstract void DrawTriangle();

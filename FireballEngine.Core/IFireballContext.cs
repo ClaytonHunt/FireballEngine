@@ -19,6 +19,8 @@ namespace FireballEngine.Core
         /// </summary>
         IAssetManager AssetManager { get; }
 
+        Renderer Renderer { get; }
+
         /// <summary>
         /// Asynchronously initializes with width, height, and title.
         /// </summary>
@@ -28,15 +30,5 @@ namespace FireballEngine.Core
         /// Factory method to create a platform-specific shader.
         /// </summary>
         Shader CreateShader(ShaderType type);
-
-        /// <summary>
-        /// Factory method to create a platform-specific renderer.
-        /// </summary>
-        Renderer CreateRenderer();
-
-        /// <summary>
-        /// Clears the screen with a color.
-        /// </summary>
-        Task Clear(Color color);
     }
 }

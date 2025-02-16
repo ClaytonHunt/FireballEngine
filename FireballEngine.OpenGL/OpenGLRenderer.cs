@@ -1,5 +1,6 @@
 using FireballEngine.Core;
 using FireballEngine.Core.Assets;
+using FireballEngine.Core.Utilities;
 using OpenTK.Graphics.OpenGL4;
 
 namespace FireballEngine.OpenGL;
@@ -8,6 +9,7 @@ public class OpenGLRenderer : Renderer
 {
     private int _vao;
     private int _vbo;
+    private Color? _lastClearColor;
 
     private float[] _vertices = {
         0.0f,  66.7f,  0.0f,  // Top (450 - 383.3)
@@ -33,6 +35,22 @@ public class OpenGLRenderer : Renderer
 
         GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
         GL.BindVertexArray(0);
+    }
+
+    /// <summary>
+    /// Clears the screen with the specified color.
+    /// </summary>
+    /// <param name="color"></param>
+    /// <returns></returns>
+    public override void Clear(Color color)
+    {
+        if (!_lastClearColor.HasValue || !_lastClearColor.Value.Equals(color))
+        {
+            GL.ClearColor(color.R, color.G, color.B, color.A);
+            _lastClearColor = color;
+        }
+
+        GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
     }
 
     public override void DrawTriangle()

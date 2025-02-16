@@ -1,5 +1,4 @@
 using FireballEngine.Blazor.Assets;
-using FireballEngine.Blazor.Utilities;
 using FireballEngine.Core;
 using FireballEngine.Core.Assets;
 using FireballEngine.Core.Utilities;
@@ -11,8 +10,7 @@ namespace FireballEngine.Blazor
     public class FireballContextBlazor : IFireballContext
     {
         private IJSObjectReference _jsModule;
-        private double _previousTimestamp;
-        private Color? _lastClearColor;
+        private double _previousTimestamp;       
 
         public IGame Game { get; }
 
@@ -20,12 +18,15 @@ namespace FireballEngine.Blazor
 
         public IAssetManager AssetManager { get; }
 
+        public Renderer Renderer { get; }
+
         public FireballContextBlazor(IJSObjectReference jsModule, IGame game, IInput input)
         {            
             _jsModule = jsModule;
             Game = game;
             Input = input;
-            AssetManager = new WebGLAssetManager(_jsModule);            
+            AssetManager = new WebGLAssetManager(_jsModule);     
+            Renderer = new WebGLRenderer(_jsModule);
         }
 
         public Task InitializeAsync(int width, int height, string title)
@@ -41,7 +42,9 @@ namespace FireballEngine.Blazor
             string title)
         {
             await _jsModule.InvokeVoidAsync("init", dotNetRef, containerRef, width, height, title);            
+
             await Game.OnLoad(this);
+
             await _jsModule.InvokeVoidAsync("start");
         }
 
@@ -51,7 +54,7 @@ namespace FireballEngine.Blazor
             float deltaMs = (float)(timestamp - _previousTimestamp);
             _previousTimestamp = timestamp;
             Game.Update(deltaMs);
-            Game.Render(this);
+            Game.Render();
         }
 
         [JSInvokable]
@@ -92,26 +95,6 @@ namespace FireballEngine.Blazor
                 default:
                     throw new NotImplementedException("Unknown shader type.");
             }
-        }
-
-        /// <summary>
-        /// Factory method to create a platform-specific renderer.
-        /// </summary>
-
-        public Renderer CreateRenderer()
-        {
-            return new WebGLRenderer(_jsModule);
-        }
-
-        public async Task Clear(Color color)
-        {
-            if (!_lastClearColor.HasValue || !_lastClearColor.Value.Equals(color))
-            {
-                _lastClearColor = color;
-                await _jsModule.InvokeVoidAsync("setClearColor", color.R, color.G, color.B, color.A);
-            }
-
-            await _jsModule.InvokeVoidAsync("clearBuffer");
-        }
+        }        
     }
 }

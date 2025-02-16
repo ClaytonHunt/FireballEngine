@@ -7,10 +7,22 @@ namespace FireballEngine.Blazor;
 public class WebGLRenderer : Renderer
 {
     private readonly IJSObjectReference _jsModule;
+    private Color? _lastClearColor;
 
     public WebGLRenderer(IJSObjectReference jsModule)
     {
         _jsModule = jsModule;
+    }
+
+    public override async void Clear(Color color)
+    {
+        if (!_lastClearColor.HasValue || !_lastClearColor.Value.Equals(color))
+        {
+            _lastClearColor = color;
+            await _jsModule.InvokeVoidAsync("setClearColor", color.R, color.G, color.B, color.A);
+        }
+
+        await _jsModule.InvokeVoidAsync("clearBuffer");
     }
 
     public override async void DrawSprite(Texture2D texture, Material material, float x, float y, float width, float height, SpriteOrigin origin = SpriteOrigin.Center, float customOriginX = 0.5f, float customOriginY = 0.5f)

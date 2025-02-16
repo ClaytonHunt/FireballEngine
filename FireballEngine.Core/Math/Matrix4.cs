@@ -56,12 +56,23 @@ namespace FireballEngine.Core.Math
         }
 
         /// <summary>Creates a scale matrix.</summary>
-        public static Matrix4 CreateScale(float scale)
+        public static Matrix4 CreateUniformScale(float scale)
         {
             return new Matrix4(
                 scale, 0, 0, 0,
                 0, scale, 0, 0,
                 0, 0, scale, 0,
+                0, 0, 0, 1
+            );
+        }
+
+        /// <summary>Creates a scale matrix.</summary>
+        public static Matrix4 CreateScale(Vector3 scale)
+        {
+            return new Matrix4(
+                scale.X, 0, 0, 0,
+                0, scale.Y, 0, 0,
+                0, 0, scale.Z, 0,
                 0, 0, 0, 1
             );
         }
@@ -79,6 +90,35 @@ namespace FireballEngine.Core.Math
             );
         }
 
+        public static Matrix4 CreateRotationX(float angle)
+        {
+            float cos = MathF.Cos(angle);
+            float sin = MathF.Sin(angle);
+            return new Matrix4(
+                1, 0, 0, 0,
+                0, cos, -sin, 0,
+                0, sin, cos, 0,
+                0, 0, 0, 1
+            );
+        }
+
+        public static Matrix4 CreateRotationY(float angle)
+        {
+            float cos = MathF.Cos(angle);
+            float sin = MathF.Sin(angle);
+            return new Matrix4(
+                cos, 0, sin, 0,
+                0, 1, 0, 0,
+                -sin, 0, cos, 0,
+                0, 0, 0, 1
+            );
+        }
+
+        public static Matrix4 CreateRotation(Vector3 rotation)
+        {
+            return CreateRotationY(rotation.Y) * CreateRotationX(rotation.X) * CreateRotationZ(rotation.Z);            
+        }
+
         /// <summary>Creates a translation matrix.</summary>
         public static Matrix4 CreateTranslation(float x, float y, float z = 0)
         {
@@ -88,6 +128,11 @@ namespace FireballEngine.Core.Math
                 0, 0, 1, 0,
                 x, y, z, 1
             );
+        }
+
+        public static Matrix4 CreateTranslation(Vector3 translation)
+        {
+            return CreateTranslation(translation.X, translation.Y, translation.Z);
         }
 
         public static Matrix4 CreateOrthographicOffCenter(float left, float right, float bottom, float top, float near, float far)
@@ -105,6 +150,66 @@ namespace FireballEngine.Core.Math
             matrix.M41 = -(right + left) * invRL;
             matrix.M42 = -(top + bottom) * invTB;
             matrix.M43 = -(far + near) * invFN;
+            matrix.M44 = 1;
+
+            return matrix;
+        }
+
+        public static Matrix4 CreatePerspectiveFieldOfView(float fov, float aspect, float near, float far)
+        {
+            var matrix = new Matrix4();
+
+            float yMax = near * MathF.Tan(0.5f * fov);
+            float yMin = -yMax;
+            float xMin = yMin * aspect;
+            float xMax = yMax * aspect;
+
+            float width = xMax - xMin;
+            float height = yMax - yMin;
+
+            float depth = far - near;
+            float q = -(far + near) / depth;
+            float qn = -2 * (far * near) / depth;
+
+            float w = 2 * near / width;
+            w = w / aspect;
+            float h = 2 * near / height;
+
+            matrix.M11 = w;
+            matrix.M22 = h;
+            matrix.M33 = q;
+            matrix.M34 = -1;
+            matrix.M43 = qn;
+
+            return matrix;
+        }
+
+        public static Matrix4 CreateLookAt(Vector3 eye, Vector3 target, Vector3 up)
+        {
+            Vector3 z = (eye - target).Normalize();
+            Vector3 x = Vector3.Cross(up, z).Normalize();
+            Vector3 y = Vector3.Cross(z, x).Normalize();
+
+            var matrix = new Matrix4();
+
+            matrix.M11 = x.X;
+            matrix.M12 = y.X;
+            matrix.M13 = z.X;
+            matrix.M14 = 0;
+
+            matrix.M21 = x.Y;
+            matrix.M22 = y.Y;
+            matrix.M23 = z.Y;
+            matrix.M24 = 0;
+
+            matrix.M31 = x.Z;
+            matrix.M32 = y.Z;
+            matrix.M33 = z.Z;
+            matrix.M34 = 0;
+
+            matrix.M41 = -Vector3.Dot(x, eye);
+            matrix.M42 = -Vector3.Dot(y, eye);
+            matrix.M43 = -Vector3.Dot(z, eye);
             matrix.M44 = 1;
 
             return matrix;

@@ -3,7 +3,6 @@ using FireballEngine.Core.Assets;
 using FireballEngine.Core.Utilities;
 using FireballEngine.OpenGL.Assets;
 using FireballEngine.OpenGL.Utilities;
-using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
@@ -13,19 +12,17 @@ namespace FireballEngine.OpenGL;
 
 public class FireballContextOpenGL : IFireballContext
 {
-    private GameWindow? _window;
-    private Color? _lastClearColor;
+    private GameWindow? _window;    
     public IGame Game { get; }
-    public IInput Input { get;}
-    public IAssetManager AssetManager { get; }
+    public IInput Input { get; private set; } = null!;
+    public Renderer Renderer { get; private set; } = null!;
+    public IAssetManager AssetManager { get; private set; } = null!;
 
     public FireballContextOpenGL(IGame game)
     {
         Fire.SetFormatter(new TerminalLogFormatter());
 
-        Game = game;
-        Input = new OpenGLInput();
-        AssetManager = new OpenGLAssetManager();        
+        Game = game;          
     }
 
     public async Task InitializeAsync(int width, int height, string title)
@@ -45,6 +42,10 @@ public class FireballContextOpenGL : IFireballContext
         _window.UpdateFrame += OnUpdateFrame;
         _window.RenderFrame += OnRenderFrame;
 
+        Input = new OpenGLInput();
+        Renderer = new OpenGLRenderer();
+        AssetManager = new OpenGLAssetManager();      
+
         // Starting this will block the current thread until the window closes.
         _window.Run();
 
@@ -54,9 +55,9 @@ public class FireballContextOpenGL : IFireballContext
     /// <summary>
     /// Called when the OpenGL windows is ready. Triggers the OnLoad event for the user to set up shaders and renderers.
     /// </summary>
-    private async void HandleOnLoad()
+    private void HandleOnLoad()
     {
-        await Game.OnLoad(this);
+        Game.OnLoad(this);
     }
 
     /// <summary>
@@ -81,20 +82,18 @@ public class FireballContextOpenGL : IFireballContext
     /// </summary>
     /// <param name="args"></param>
 
-    private async void OnUpdateFrame(FrameEventArgs args)
+    private void OnUpdateFrame(FrameEventArgs args)
     {
         float deltaMs = (float)(args.Time * 1000.0f);
-        await Game.Update(deltaMs);
+        Game.Update(deltaMs);
     }
 
     /// <summary>
     /// This method is called every frame. It is responsible for rendering the game.
     /// </summary>
-    private async void OnRenderFrame(FrameEventArgs args)
+    private void OnRenderFrame(FrameEventArgs args)
     {
-        // The game is responsible for telling the context what to do 
-        // (e.g., clearing the screen). We call Game.Render(this).
-        await Game.Render(this);
+        Game.Render();
 
         _window?.SwapBuffers();
     }
@@ -116,31 +115,5 @@ public class FireballContextOpenGL : IFireballContext
             default:
                 throw new ArgumentException("Invalid shader type.");
         }
-    }
-
-
-    /// <summary>
-    /// Creates a new OpenGL renderer.
-    /// </summary>
-    public Renderer CreateRenderer()
-    {
-        return new OpenGLRenderer();
-    }    
-
-    /// <summary>
-    /// Clears the screen with the specified color.
-    /// </summary>
-    /// <param name="color"></param>
-    /// <returns></returns>
-    public async Task Clear(Color color)
-    {
-        if (!_lastClearColor.HasValue || !_lastClearColor.Value.Equals(color))
-        {
-            GL.ClearColor(color.R, color.G, color.B, color.A);
-            _lastClearColor = color;
-        }
-
-        GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-        await Task.CompletedTask;
     }
 }
