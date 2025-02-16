@@ -18,7 +18,9 @@ public class WebGLRenderer : Renderer
         material.Use();
         texture.Bind();
 
-        await _jsModule.InvokeVoidAsync("drawSprite", texture.Name, x, y, width, height);
+        (float originX, float originY) = GetOriginOffset(origin, customOriginX, customOriginY);
+
+        await _jsModule.InvokeVoidAsync("drawSprite", texture.Name, x, y, width, height, originX, originY);
     }
 
     public override async void DrawTriangle()

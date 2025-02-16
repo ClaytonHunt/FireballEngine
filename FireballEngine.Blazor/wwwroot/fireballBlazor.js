@@ -18,7 +18,7 @@ export function init(dotNetObjRef, containerRef, width, height, title) {
   canvas.height = height;
   container.appendChild(canvas);
 
-  let gl = canvas.getContext('webgl2', { premultipliedAplpha: false }) || canvas.getContext('webgl');
+  let gl = canvas.getContext('webgl2') || canvas.getContext('webgl');
 
   if (!gl) {
     fire.error('WebGL not supported');
@@ -29,7 +29,7 @@ export function init(dotNetObjRef, containerRef, width, height, title) {
   document.title = title;
 
   _gl.enable(_gl.BLEND);
-  _gl.blendFunc(_gl.SRC_ALPHA, _gl.ONE_MINUS_SRC_ALPHA);  
+  _gl.blendFuncSeparate(_gl.SRC_ALPHA, _gl.ONE_MINUS_SRC_ALPHA, _gl.ONE, _gl.ONE_MINUS_SRC_ALPHA);
 }
 
 export function start() {

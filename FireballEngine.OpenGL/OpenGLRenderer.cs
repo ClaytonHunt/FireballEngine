@@ -50,15 +50,18 @@ public class OpenGLRenderer : Renderer
         // Compute the origin offset
         (float originX, float originY) = GetOriginOffset(origin, customOriginX, customOriginY);
 
+        var offsetX = width * originX;
+        var offsetY = height * originY;
+
         // Adjust vertex positions based on the origin
         float[] vertices =
         {
-            x - originX, y + height - originY, 0.0f, 0.0f, 1.0f, // Top Left
-            x - originX, y - originY, 0.0f, 0.0f, 0.0f, // Bottom Left
-            x + width - originX, y - originY, 0.0f, 1.0f, 0.0f, // Bottom Right
-            x - originX, y + height - originY, 0.0f, 0.0f, 1.0f, // Top Left
-            x + width - originX, y - originY, 0.0f, 1.0f, 0.0f, // Bottom Right
-            x + width - originX, y + height - originY, 0.0f, 1.0f, 1.0f // Top Right
+            x - offsetX, y + height - offsetY, 0.0f, 0.0f, 1.0f, // Top Left
+            x - offsetX, y - offsetY, 0.0f, 0.0f, 0.0f, // Bottom Left
+            x + width - offsetX, y - offsetY, 0.0f, 1.0f, 0.0f, // Bottom Right
+            x - offsetX, y + height - offsetY, 0.0f, 0.0f, 1.0f, // Top Left
+            x + width - offsetX, y - offsetY, 0.0f, 1.0f, 0.0f, // Bottom Right
+            x + width - offsetX, y + height - offsetY, 0.0f, 1.0f, 1.0f // Top Right
         };
 
         GL.BindVertexArray(_vao);
