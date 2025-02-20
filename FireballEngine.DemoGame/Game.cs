@@ -76,7 +76,7 @@ public class Player : Entity
 
         Transform.Position = new Vector3(400, 300, 0);
 
-        _renderable = new SpriteRenderableComponent(new Material(shader, Color.White), texture, spriteWidth, spriteHeight);
+        _renderable = new SpriteRenderableComponent(material, texture, spriteWidth, spriteHeight);
     }
 
     public override void Update(float deltaMs)
