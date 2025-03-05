@@ -51,7 +51,7 @@ public class Player : Entity
     private IFireballContext _context;
     private IInput _input;
     private IAssetManager _assetManager;
-    private SpriteRenderableComponent _renderable;
+    private Sprite _sprite;
     private float _speed = .5f;
 
     public Player(IFireballContext context, IInput input, IAssetManager assetManager)
@@ -76,7 +76,7 @@ public class Player : Entity
 
         Transform.Position = new Vector3(400, 300, 0);
 
-        _renderable = new SpriteRenderableComponent(material, texture, spriteWidth, spriteHeight);
+        _sprite = new Sprite(material, texture, spriteWidth, spriteHeight);
     }
 
     public override void Update(float deltaMs)
@@ -100,7 +100,7 @@ public class Player : Entity
 
     public override void Render(Renderer renderer, Camera camera)
     {
-        _renderable!.Render(renderer, camera, Transform);
+        _sprite!.Render(renderer, camera, Transform);
     }
 }
 
@@ -109,7 +109,7 @@ public class Asteroid : Entity
     private IFireballContext _context;
     private IInput _input;
     private IAssetManager _assetManager;
-    private SpriteRenderableComponent _renderable;
+    private Sprite _sprite;
     // private float _speed = .5f;
 
     public Asteroid(IFireballContext context, IInput input, IAssetManager assetManager)
@@ -134,7 +134,7 @@ public class Asteroid : Entity
 
         Transform.Position = new Vector3(400, 300, 0);
 
-        _renderable = new SpriteRenderableComponent(new Material(shader, Color.White), texture, spriteWidth, spriteHeight);
+        _sprite = new Sprite(new Material(shader, Color.White), texture, spriteWidth, spriteHeight);
     }
 
     public override void Update(float deltaMs)
@@ -159,6 +159,6 @@ public class Asteroid : Entity
 
     public override void Render(Renderer renderer, Camera camera)
     {
-        _renderable!.Render(renderer, camera, Transform);
+        _sprite!.Render(renderer, camera, Transform);
     }
 }
