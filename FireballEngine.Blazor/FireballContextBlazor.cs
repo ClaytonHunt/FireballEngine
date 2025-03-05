@@ -14,17 +14,16 @@ namespace FireballEngine.Blazor
 
         public IGame Game { get; }
 
-        public IInput Input { get; }
+        public IInput Input { get; private set; } = null!;
 
         public IAssetManager AssetManager { get; }
 
         public Renderer Renderer { get; }
 
-        public FireballContextBlazor(IJSObjectReference jsModule, IGame game, IInput input)
+        public FireballContextBlazor(IJSObjectReference jsModule, IGame game)
         {            
             _jsModule = jsModule;
             Game = game;
-            Input = input;
             AssetManager = new WebGLAssetManager(_jsModule);     
             Renderer = new WebGLRenderer(_jsModule);
         }
@@ -41,6 +40,8 @@ namespace FireballEngine.Blazor
             int height,
             string title)
         {
+            Input = new BlazorInput();
+            
             await _jsModule.InvokeVoidAsync("init", dotNetRef, containerRef, width, height, title);            
 
             await Game.OnLoad(this);

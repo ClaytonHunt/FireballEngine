@@ -22,7 +22,6 @@
     private FireballContextBlazor _context = default!;
     private ElementReference _containerRef;
     private IJSObjectReference? _module;
-    private BlazorInput _input = new BlazorInput();
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -39,7 +38,7 @@
 
             _module = await JSRuntime.InvokeAsync<IJSObjectReference>("import", "./_content/FireballEngine.Blazor/fireballBlazor.js");
 
-            _context = new FireballContextBlazor(_module, Game, _input);
+            _context = new FireballContextBlazor(_module, Game);
 
             await _context.InitializeAsync(
                 DotNetObjectReference.Create(_context),
@@ -55,11 +54,11 @@
 
     private void OnKeyDown(KeyboardEventArgs e)
     {
-        _input.OnKeyDown(e);
+        ((BlazorInput)_context.Input)?.OnKeyDown(e);
     }
 
     private void OnKeyUp(KeyboardEventArgs e)
     {
-        _input.OnKeyUp(e);
+        ((BlazorInput)_context.Input)?.OnKeyUp(e);
     }    
 }

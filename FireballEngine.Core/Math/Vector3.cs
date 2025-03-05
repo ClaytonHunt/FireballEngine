@@ -1,3 +1,4 @@
+
 namespace FireballEngine.Core.Math;
 
 public struct Vector3
@@ -33,9 +34,34 @@ public struct Vector3
         );
     }
 
+    public static float Distance(Vector3 a, Vector3 b)
+    {
+        return (a - b).Length();
+    }
+
+    public float Length()
+    {
+        return (float)System.Math.Sqrt(X * X + Y * Y + Z * Z);
+    }
+
+    public float LengthSquared()
+    {
+        return X * X + Y * Y + Z * Z;
+    }
+
     public static float Dot(Vector3 a, Vector3 b)
     {
         return a.X * b.X + a.Y * b.Y + a.Z * b.Z;
+    }
+
+    public static bool operator ==(Vector3 a, Vector3 b)
+    {
+        return a.X == b.X && a.Y == b.Y && a.Z == b.Z;
+    }
+
+    public static bool operator !=(Vector3 a, Vector3 b)
+    {
+        return a.X != b.X || a.Y != b.Y || a.Z != b.Z;        
     }
 
     public static Vector3 operator +(Vector3 a, Vector3 b)
@@ -56,5 +82,15 @@ public struct Vector3
     public static Vector3 operator /(Vector3 a, float scalar)
     {
         return new Vector3(a.X / scalar, a.Y / scalar, a.Z / scalar);
+    }
+
+    public static Vector3 operator -(Vector3 a)
+    {
+        return new Vector3(-a.X, -a.Y, -a.Z);
+    }
+
+    public override string ToString()
+    {
+        return $"({X}, {Y}, {Z})";
     }
 }

@@ -3,7 +3,7 @@ using FireballEngine.Core.Utilities;
 
 namespace FireballEngine.Core;
 
-public class SpriteRenderableComponent : RenderableComponent
+public class Sprite : RenderableComponent
 {
     public Texture2D Texture { get; }
     public float Width { get; }
@@ -12,7 +12,7 @@ public class SpriteRenderableComponent : RenderableComponent
     public float CustomOriginX { get; set; } = 0.5f;
     public float CustomOriginY { get; set; } = 0.5f;
 
-    public SpriteRenderableComponent(Material material, Texture2D texture, float width, float height, 
+    public Sprite(Material material, Texture2D texture, float width, float height, 
         SpriteOrigin origin = SpriteOrigin.Center, float customOriginX = 0.5f, float customOriginY = 0.5f)
         : base(material)
     {

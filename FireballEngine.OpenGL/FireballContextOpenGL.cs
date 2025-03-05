@@ -85,7 +85,7 @@ public class FireballContextOpenGL : IFireballContext
     private void OnUpdateFrame(FrameEventArgs args)
     {
         float deltaMs = (float)(args.Time * 1000.0f);
-        Fire.Info($"Delta: {deltaMs}");
+        
         Game.Update(deltaMs);
     }
 
