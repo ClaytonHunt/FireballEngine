@@ -1,8 +1,9 @@
+using FireballEngine.Core;
 using Microsoft.AspNetCore.Components.Web;
 
-namespace FireballEngine.Core
+namespace FireballEngine.Blazor.Input
 {
-    public class BlazorInput : IInput
+    public class BlazorInputManager : FireballEngine.Core.Input.IInput
     {
         private readonly Dictionary<KeyCode, bool> _keyStates = new();
 

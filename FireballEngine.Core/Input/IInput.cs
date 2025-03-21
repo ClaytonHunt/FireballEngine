@@ -1,4 +1,4 @@
-namespace FireballEngine.Core;
+namespace FireballEngine.Core.Input;
 
 public interface IInput
 {

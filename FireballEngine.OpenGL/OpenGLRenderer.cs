@@ -3,7 +3,7 @@ using FireballEngine.Core.Assets;
 using FireballEngine.Core.Utilities;
 using OpenTK.Graphics.OpenGL4;
 
-namespace FireballEngine.OpenGL;
+namespace FireballEngine.OpenGL.Rendering;
 
 public class OpenGLRenderer : Renderer
 {
