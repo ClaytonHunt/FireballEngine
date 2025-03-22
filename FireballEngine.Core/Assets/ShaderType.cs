@@ -1,4 +1,4 @@
-namespace FireballEngine.Core;
+namespace FireballEngine.Core.Assets;
 
 /// <summary>
 /// Represents the different types of shaders available in the Fireball Engine.

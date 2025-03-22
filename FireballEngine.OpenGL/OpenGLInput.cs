@@ -1,4 +1,4 @@
-using FireballEngine.Core;
+using FireballEngine.Core.Input;
 using OpenTK.Windowing.Common;
 
 namespace FireballEngine.OpenGL;

@@ -1,6 +1,6 @@
-using FireballEngine.Core;
 using FireballEngine.Core.Assets;
-using FireballEngine.Core.Utilities;
+using FireballEngine.Core.Rendering;
+using FireballEngine.Core.Utils;
 using OpenTK.Graphics.OpenGL4;
 
 namespace FireballEngine.OpenGL.Rendering;

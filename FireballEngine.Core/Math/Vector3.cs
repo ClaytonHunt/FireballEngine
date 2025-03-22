@@ -89,6 +89,20 @@ public struct Vector3
         return new Vector3(-a.X, -a.Y, -a.Z);
     }
 
+    public override bool Equals(object? obj)
+    {
+        if (obj is Vector3 other)
+        {
+            return this == other;
+        }
+        return false;
+    }
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(X, Y, Z);
+    }
+
     public override string ToString()
     {
         return $"({X}, {Y}, {Z})";

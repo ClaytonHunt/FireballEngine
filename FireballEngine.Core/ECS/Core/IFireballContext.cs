@@ -1,6 +1,8 @@
 using FireballEngine.Core.Assets;
+using FireballEngine.Core.Input;
+using FireballEngine.Core.Rendering;
 
-namespace FireballEngine.Core
+namespace FireballEngine.Core.ECS.Core
 {
     public interface IFireballContext
     {

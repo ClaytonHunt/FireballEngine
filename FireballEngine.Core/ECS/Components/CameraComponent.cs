@@ -1,9 +1,8 @@
 using FireballEngine.Core.Math;
-using FireballEngine.Core.Utilities;
 
-namespace FireballEngine.Core;
+namespace FireballEngine.Core.ECS.Components;
 
-public class Camera
+public class CameraComponent
 {
     public Matrix4 ViewMatrix { get; private set; }
     public Matrix4 ProjectionMatrix { get; private set; }
@@ -17,7 +16,7 @@ public class Camera
     private float _near = -1.0f, _far = 1.0f;
     private float _fov = MathF.PI / 4; // 45 degrees
 
-    public Camera(ProjectionType projectionType, float width, float height)
+    public CameraComponent(ProjectionType projectionType, float width, float height)
     {
         _projectionType = projectionType;
         _width = width;

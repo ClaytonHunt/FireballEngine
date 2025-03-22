@@ -1,7 +1,10 @@
 using FireballEngine.Blazor.Assets;
-using FireballEngine.Core;
+using FireballEngine.Blazor.Input;
 using FireballEngine.Core.Assets;
-using FireballEngine.Core.Utilities;
+using FireballEngine.Core.ECS.Core;
+using FireballEngine.Core.Input;
+using FireballEngine.Core.Rendering;
+using FireballEngine.Core.Utils;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 
@@ -40,7 +43,7 @@ namespace FireballEngine.Blazor
             int height,
             string title)
         {
-            Input = new BlazorInput();
+            Input = new BlazorInputManager();
             
             await _jsModule.InvokeVoidAsync("init", dotNetRef, containerRef, width, height, title);            
 

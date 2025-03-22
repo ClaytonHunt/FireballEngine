@@ -1,7 +1,6 @@
-using System.Drawing;
 using System.Reflection;
 using FireballEngine.Core.Assets;
-using FireballEngine.Core.Utilities;
+using FireballEngine.Core.Utils;
 
 namespace FireballEngine.OpenGL.Assets;
 

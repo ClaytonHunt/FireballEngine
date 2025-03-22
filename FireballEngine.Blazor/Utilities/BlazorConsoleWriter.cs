@@ -1,4 +1,4 @@
-using FireballEngine.Core.Utilities;
+using FireballEngine.Core.Utils;
 using Microsoft.JSInterop;
 using System.Text;
 

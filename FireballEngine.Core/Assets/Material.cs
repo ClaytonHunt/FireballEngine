@@ -1,9 +1,9 @@
-using FireballEngine.Core.Utilities;
+using FireballEngine.Core.Utils;
 
-namespace FireballEngine.Core;
+namespace FireballEngine.Core.Assets;
 
 /// <summary>
-/// A material represents a shader and it's properties.
+/// Represents a material that defines how surfaces appear when rendered.
 /// </summary>
 public class Material
 {
@@ -16,8 +16,8 @@ public class Material
         Color = color;
     }
 
-    public void Use() 
-    {        
+    public void Use()
+    {
         Shader.Use();
         Shader.SetColor(Color.R, Color.G, Color.B, Color.A);
     }

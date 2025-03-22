@@ -1,5 +1,4 @@
-using FireballEngine.Core;
-using FireballEngine.Core.Utilities;
+using FireballEngine.Core.Assets;
 using OpenTK.Graphics.OpenGL4;
 using GLShaderType = OpenTK.Graphics.OpenGL4.ShaderType;
 

@@ -1,7 +1,14 @@
 using FireballEngine.Core;
-using FireballEngine.Core.Math;
 using FireballEngine.Core.Assets;
-using FireballEngine.Core.Utilities;
+using FireballEngine.Core.ECS;
+using FireballEngine.Core.ECS.Components;
+using FireballEngine.Core.ECS.Core;
+using FireballEngine.Core.Input;
+using FireballEngine.Core.Math;
+using FireballEngine.Core.Rendering;
+using FireballEngine.Core.Utils;
+using System;
+using System.Threading.Tasks;
 
 namespace FireballEngine.DemoGame;
 
@@ -20,7 +27,7 @@ public class Game : IGame
         _scene = new Scene();
 
         // Add Camera
-        var camera = new Camera(ProjectionType.Orthographic, 800, 600);
+        var camera = new CameraComponent(ProjectionType.Orthographic, 800, 600);
         _scene.AddCamera(CameraLayer.Game, camera);
 
         // Add Player
@@ -98,7 +105,7 @@ public class Player : Entity
         if (_input.IsKeyDown(KeyCode.Down)) Transform.Scale -= new Vector3(0.001f * timeStep, 0.001f * timeStep, 0);
     }
 
-    public override void Render(Renderer renderer, Camera camera)
+    public override void Render(Renderer renderer, CameraComponent camera)
     {
         _sprite!.Render(renderer, camera, Transform);
     }
@@ -157,7 +164,7 @@ public class Asteroid : Entity
         // if (_input.IsKeyDown(KeyCode.Down)) Transform.Scale -= new Vector3(0.001f * timeStep, 0.001f * timeStep, 0);
     }
 
-    public override void Render(Renderer renderer, Camera camera)
+    public override void Render(Renderer renderer, CameraComponent camera)
     {
         _sprite!.Render(renderer, camera, Transform);
     }

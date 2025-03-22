@@ -1,4 +1,4 @@
-namespace FireballEngine.Core.Utilities;
+namespace FireballEngine.Core.Utils;
 
 public abstract class LogFormatter
 {

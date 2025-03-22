@@ -1,4 +1,4 @@
-namespace FireballEngine.Core;
+namespace FireballEngine.Core.ECS.Core;
 
 public interface IGame
 {

@@ -1,5 +1,5 @@
 using FireballEngine.Core.Assets;
-using FireballEngine.Core.Utilities;
+using FireballEngine.Core.Utils;
 using OpenTK.Graphics.OpenGL4;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;

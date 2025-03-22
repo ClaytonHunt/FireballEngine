@@ -1,5 +1,4 @@
-﻿using FireballEngine.Core.Assets;
-using FireballEngine.DemoGame;
+﻿using FireballEngine.DemoGame;
 using FireballEngine.OpenGL;
 
 var game = new Game();

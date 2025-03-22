@@ -1,12 +1,15 @@
-using FireballEngine.Core;
 using FireballEngine.Core.Assets;
-using FireballEngine.Core.Utilities;
+using FireballEngine.Core.ECS.Core;
+using FireballEngine.Core.Input;
+using FireballEngine.Core.Rendering;
+using FireballEngine.Core.Utils;
 using FireballEngine.OpenGL.Assets;
+using FireballEngine.OpenGL.Rendering;
 using FireballEngine.OpenGL.Utilities;
 using OpenTK.Mathematics;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
-using ShaderType = FireballEngine.Core.ShaderType;
+using ShaderType = FireballEngine.Core.Assets.ShaderType;
 
 namespace FireballEngine.OpenGL;
 

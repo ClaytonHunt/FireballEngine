@@ -1,5 +1,6 @@
 using FireballEngine.Core.Assets;
-using FireballEngine.Core.Utilities;
+using FireballEngine.Core.ECS.Components;
+using FireballEngine.Core.Rendering;
 
 namespace FireballEngine.Core;
 
@@ -24,7 +25,7 @@ public class Sprite : RenderableComponent
         CustomOriginY = customOriginY;
     }
 
-    public override void Render(Renderer renderer, Camera camera, Transform transform)
+    public override void Render(Renderer renderer, CameraComponent camera, TransformComponent transform)
     {
         Material.Use();
         Material.Shader.SetMatrix("model", transform.GetTransformationMatrix());

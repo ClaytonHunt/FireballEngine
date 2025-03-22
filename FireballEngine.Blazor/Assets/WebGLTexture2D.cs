@@ -1,4 +1,3 @@
-using FireballEngine.Core.Assets;
 using Microsoft.JSInterop;
 
 namespace FireballEngine.Blazor.Assets;

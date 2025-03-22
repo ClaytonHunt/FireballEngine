@@ -1,6 +1,8 @@
+@using FireballEngine.Blazor.Input
 @using FireballEngine.Blazor.Utilities
 @using FireballEngine.Core
-@using FireballEngine.Core.Utilities
+@using FireballEngine.Core.ECS.Core
+@using FireballEngine.Core.Utils
 @using Microsoft.JSInterop
 @inject IJSRuntime JSRuntime
 @rendermode InteractiveWebAssembly
@@ -54,11 +56,11 @@
 
     private void OnKeyDown(KeyboardEventArgs e)
     {
-        ((BlazorInput)_context.Input)?.OnKeyDown(e);
+        ((BlazorInputManager)_context.Input)?.OnKeyDown(e);
     }
 
     private void OnKeyUp(KeyboardEventArgs e)
     {
-        ((BlazorInput)_context.Input)?.OnKeyUp(e);
+        ((BlazorInputManager)_context.Input)?.OnKeyUp(e);
     }    
 }

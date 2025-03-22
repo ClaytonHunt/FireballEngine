@@ -1,4 +1,4 @@
-namespace FireballEngine.Core;
+namespace FireballEngine.Core.Assets;
 
 /// <summary>
 /// Base class for shader objects in Fireball Engine

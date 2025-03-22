@@ -1,13 +1,15 @@
-using FireballEngine.Core.Utilities;
+using FireballEngine.Core.ECS.Components;
+using FireballEngine.Core.Rendering;
+using FireballEngine.Core.Utils;
 
-namespace FireballEngine.Core;
+namespace FireballEngine.Core.ECS.Core;
 
 public class Scene
 {
     private List<Entity> _entities = new();
-    private Dictionary<CameraLayer, Camera> _cameras = new();
+    private Dictionary<CameraLayer, CameraComponent> _cameras = new();
 
-    public void AddCamera(CameraLayer layer, Camera camera)
+    public void AddCamera(CameraLayer layer, CameraComponent camera)
     {
         if (_cameras.ContainsKey(layer))
         {

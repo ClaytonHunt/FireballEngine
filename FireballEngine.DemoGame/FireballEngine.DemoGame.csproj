@@ -1,13 +1,18 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <ItemGroup>
-    <ProjectReference Include="..\FireballEngine.Core\FireballEngine.Core.csproj" />
-  </ItemGroup>
-
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
+    <PackageId>FireballEngine.DemoGame</PackageId>
+    <Version>$(Version)</Version>
+    <Authors>Clayton Hunt</Authors>
+    <Description>Demo Game for Fireball Engine</Description>    
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\FireballEngine.Core\FireballEngine.Core.csproj" Condition="'$(Configuration)' == 'Debug'" />
+    <!-- Conditional reference for NuGet package -->
+    <PackageReference Include="FireballEngine.Core" Version="0.1.0-alpha" Condition="'$(Configuration)' != 'Debug'" />    
+  </ItemGroup>
 </Project>

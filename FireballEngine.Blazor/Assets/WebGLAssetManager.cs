@@ -1,6 +1,6 @@
 using System.Reflection;
 using FireballEngine.Core.Assets;
-using FireballEngine.Core.Utilities;
+using FireballEngine.Core.Utils;
 using Microsoft.JSInterop;
 
 namespace FireballEngine.Blazor.Assets;
